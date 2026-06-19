@@ -36,20 +36,10 @@ export default function AdvisorDashboard() {
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-6">
-      {/* Page heading */}
-      <div className="mb-5">
-        <h1 className="font-display text-[22px] font-bold tracking-tight text-ink">
-          Advisor workspace
-        </h1>
-        <p className="text-[13px] text-ink-soft">
-          Your clients, learning, and partner network — in one place.
-        </p>
-      </div>
-
       <BriefingBand text={brief.briefingText} />
 
       {/* Metric row */}
-      <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <MetricCard
           label="Active clients"
           value={brief.stats.activeClients}

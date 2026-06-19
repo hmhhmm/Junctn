@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -48,7 +49,7 @@ const config: Config = {
       boxShadow: {
         card: "0 1px 2px rgba(22,22,29,0.04), 0 1px 1px rgba(22,22,29,0.03)",
         lift: "0 4px 20px -4px rgba(22,22,29,0.10), 0 2px 6px -2px rgba(22,22,29,0.06)",
-        band: "0 10px 40px -12px rgba(91,91,214,0.45)",
+        band: "0 10px 40px -12px rgba(15,118,110,0.40)",
       },
       keyframes: {
         "fade-in": {

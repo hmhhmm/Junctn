@@ -2,22 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Light mode tokens ─────────────────────────────────── */
 :root {
-  --background: #f7f7fa; /* app background, near-white */
-  --surface: #ffffff; /* card surfaces */
-  --ink: #16161d; /* primary text */
-  --ink-soft: #595968; /* secondary text */
-  --ink-faint: #9696a6; /* tertiary text / hints */
-  --line: #ebebf1; /* hairline borders */
-  --accent: #5b5bd6; /* primary brand accent (indigo-violet) */
-  --accent-soft: #eeeefc; /* accent tint for badges/fills */
-  --accent-ink: #3838a8; /* text on accent-soft */
-  --warn: #b76e00; /* warnings / gaps (amber) */
-  --warn-soft: #fdf2e2;
-  --alert: #d23f57; /* attention / missing-action (rose) */
-  --alert-soft: #fcebee;
-  --ok: #1a9d6e; /* positive / closed */
-  --ok-soft: #e6f6ef;
+  --background: #f5f4f0;
+  --surface: #ffffff;
+  --ink: #0f1923;
+  --ink-soft: #4a5568;
+  --ink-faint: #94a3b8;
+  --line: #e2e8f0;
+  --accent: #0f766e;
+  --accent-soft: #ccfbf1;
+  --accent-ink: #134e4a;
+  --warn: #b45309;
+  --warn-soft: #fef3c7;
+  --alert: #c53030;
+  --alert-soft: #fee2e2;
+  --ok: #166534;
+  --ok-soft: #dcfce7;
+
+  /* Component-specific tokens */
+  --sidebar-bg: #0b1520;
+  --topbar-bg: rgba(255, 255, 255, 0.92);
+  --wash-accent: rgba(15, 118, 110, 0.045);
+  --wash-warn:   rgba(180, 83, 9,  0.045);
+  --wash-alert:  rgba(197, 48, 48, 0.045);
+}
+
+/* ── Dark mode overrides ───────────────────────────────── */
+.dark {
+  --background: #0f1923;
+  --surface: #162032;
+  --ink: #e2e8f0;
+  --ink-soft: #94a3b8;
+  --ink-faint: #64748b;
+  --line: rgba(255, 255, 255, 0.08);
+  --accent: #2dd4bf;
+  --accent-soft: rgba(45, 212, 191, 0.14);
+  --accent-ink: #5eead4;
+  --warn: #fbbf24;
+  --warn-soft: rgba(251, 191, 36, 0.14);
+  --alert: #f87171;
+  --alert-soft: rgba(248, 113, 113, 0.14);
+  --ok: #4ade80;
+  --ok-soft: rgba(74, 222, 128, 0.14);
+
+  --sidebar-bg: #070d18;
+  --topbar-bg: rgba(15, 25, 35, 0.94);
+  --wash-accent: rgba(45, 212, 191, 0.07);
+  --wash-warn:   rgba(251, 191, 36, 0.07);
+  --wash-alert:  rgba(248, 113, 113, 0.07);
 }
 
 * {
@@ -35,18 +68,14 @@ body {
   }
 }
 
-/* Visible keyboard focus everywhere */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -54,15 +83,12 @@ body {
   }
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
+::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb {
   background: #d9d9e3;
   border-radius: 8px;
   border: 2px solid var(--background);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #c4c4d1;
-}
+.dark ::-webkit-scrollbar-thumb { background: #2a3a50; }
+::-webkit-scrollbar-thumb:hover { background: #c4c4d1; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #334e6a; }
