@@ -1,15 +1,10 @@
 from __future__ import annotations
-import math
 import numpy as np
 from fastapi import APIRouter
-from pydantic import BaseModel
-from sentence_transformers import SentenceTransformer
+from pydantic import BaseModel, Field
+from backend.api._shared_model import _model
 
 router = APIRouter(prefix="/cpd", tags=["cpd"])
-
-print("Loading CPD embedding model…")
-_model = SentenceTransformer("all-MiniLM-L6-v2")
-print("CPD model ready.")
 
 MODULES = [
     {"id": "mod-1",  "title": "Trust Structures & Probate Essentials",     "topic": "Estate & Trust",       "credits": 2, "durationMin": 45, "required": True,  "document": "trust structures probate estate planning family trust asset protection inheritance will enduring power of attorney"},
@@ -35,30 +30,26 @@ _module_embeddings: np.ndarray = _model.encode(_module_docs, normalize_embedding
 print(f"Indexed {len(MODULES)} CPD modules.")
 
 
-def _cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
-    return float(np.dot(a, b))
-
-
 def _similarity_to_score(sim: float) -> int:
     return max(0, min(100, round((sim + 1) / 2 * 100)))
 
 
 class CpdSearchRequest(BaseModel):
     query: str
-    top_k: int = 3
+    top_k: int = Field(default=3, ge=1)
     exclude_ids: list[str] = []
 
 
 @router.post("/search")
 def search_cpd_modules(req: CpdSearchRequest):
     query_vec = _model.encode([req.query], normalize_embeddings=True)[0]
-    sims = [_cosine_similarity(query_vec, emb) for emb in _module_embeddings]
+    sims = [float(np.dot(query_vec, emb)) for emb in _module_embeddings]
 
     candidates = [
         (i, sim) for i, sim in enumerate(sims)
         if MODULES[i]["id"] not in req.exclude_ids
     ]
-    ranked = sorted(candidates, key=lambda x: x[1], reverse=True)[: max(1, req.top_k)]
+    ranked = sorted(candidates, key=lambda x: x[1], reverse=True)[: req.top_k]
 
     results = []
     for idx, sim in ranked:

@@ -80,7 +80,7 @@ export function CpdComplianceTable() {
                   className="flex items-center gap-3 rounded-lg border p-3"
                   style={
                     status === "at_risk"
-                      ? { borderLeftColor: "var(--alert)", borderLeftWidth: "3px" }
+                      ? { borderLeftColor: "var(--alert)", borderLeftWidth: "3px", borderLeftStyle: "solid" }
                       : {}
                   }
                 >

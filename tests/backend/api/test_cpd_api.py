@@ -1,22 +1,18 @@
 """
-Backend tests for JUNCTN FastAPI server (main.py).
-
-Run:
-    cd D:\hackathon\Junctn\backend
-    pip install pytest httpx
-    pytest test_main.py -v
+Tests for CPD search, health, partners, and match endpoints.
+Run from repo root: pytest tests/backend/api/test_cpd_api.py -v
 """
 
 import pytest
 from fastapi.testclient import TestClient
-from main import app
+from backend.main import app
 from backend.api.cpd import MODULES
 from backend.api.matching import PARTNERS
 
 client = TestClient(app)
 
 # ---------------------------------------------------------------------------
-# /health  (BUG-1 regression: was defined before MODULES causing NameError)
+# /health
 # ---------------------------------------------------------------------------
 
 class TestHealth:
@@ -25,7 +21,7 @@ class TestHealth:
         assert response.status_code == 200
 
     def test_status_ok(self):
-        data = response = client.get("/health").json()
+        data = client.get("/health").json()
         assert data["status"] == "ok"
 
     def test_modules_indexed_is_15(self):
@@ -43,7 +39,7 @@ class TestHealth:
 
 
 # ---------------------------------------------------------------------------
-# GET /partners
+# GET /match/partners
 # ---------------------------------------------------------------------------
 
 class TestGetPartners:
@@ -107,7 +103,6 @@ class TestCpdSearch:
 
     def test_exclude_ids_removes_specified_modules(self):
         """Modules in exclude_ids must not appear in results."""
-        # First get results without exclusion to learn which ids would appear
         base = client.post("/cpd/search", json={"query": "compliance AML KYC", "top_k": 5}).json()
         ids_to_exclude = [r["id"] for r in base["results"]]
 
@@ -123,7 +118,6 @@ class TestCpdSearch:
 
     def test_exclude_ids_partial_exclusion(self):
         """Only specified modules should be excluded, others should still appear."""
-        # Exclude mod-13 (Ethics & Fair Dealing) specifically
         response = client.post("/cpd/search", json={
             "query": "ethics compliance fair dealing",
             "top_k": 5,
@@ -133,7 +127,7 @@ class TestCpdSearch:
         returned_ids = [r["id"] for r in data["results"]]
         assert "mod-13" not in returned_ids
 
-    def test_exclude_all_modules_returns_empty_or_at_most_zero_exclusions(self):
+    def test_exclude_all_modules_returns_empty(self):
         """Excluding all 15 module ids should yield an empty results list."""
         all_ids = [m["id"] for m in MODULES]
         response = client.post("/cpd/search", json={
@@ -142,32 +136,27 @@ class TestCpdSearch:
             "exclude_ids": all_ids,
         })
         assert response.status_code == 200
-        data = response.json()
-        assert data["results"] == []
+        assert response.json()["results"] == []
 
     def test_score_is_integer_between_0_and_100(self):
         response = client.post("/cpd/search", json={"query": "retirement income SRS"})
-        data = response.json()
-        for result in data["results"]:
+        for result in response.json()["results"]:
             assert isinstance(result["score"], int)
             assert 0 <= result["score"] <= 100
 
     def test_credits_field_is_positive_integer(self):
         response = client.post("/cpd/search", json={"query": "mortgage home loan"})
-        data = response.json()
-        for result in data["results"]:
+        for result in response.json()["results"]:
             assert isinstance(result["credits"], int)
             assert result["credits"] > 0
 
     def test_reason_field_is_non_empty_string(self):
         response = client.post("/cpd/search", json={"query": "business succession planning"})
-        data = response.json()
-        for result in data["results"]:
+        for result in response.json()["results"]:
             assert isinstance(result["reason"], str)
             assert len(result["reason"]) > 0
 
     def test_empty_query_returns_200_graceful(self):
-        """BUG-N: blank query must not crash the server."""
         response = client.post("/cpd/search", json={"query": ""})
         assert response.status_code == 200
 
@@ -177,28 +166,23 @@ class TestCpdSearch:
 
     def test_results_ordered_by_descending_score(self):
         response = client.post("/cpd/search", json={"query": "will estate inheritance legal", "top_k": 5})
-        data = response.json()
-        scores = [r["score"] for r in data["results"]]
-        assert scores == sorted(scores, reverse=True), "Results should be in descending score order"
+        scores = [r["score"] for r in response.json()["results"]]
+        assert scores == sorted(scores, reverse=True)
 
     def test_relevant_query_returns_topically_related_module(self):
-        """'retirement CPF annuity' should surface the Retirement Income module."""
         response = client.post("/cpd/search", json={"query": "retirement CPF annuity SRS", "top_k": 3})
-        data = response.json()
-        topics = [r["topic"] for r in data["results"]]
+        topics = [r["topic"] for r in response.json()["results"]]
         assert "Retirement" in topics, f"Expected Retirement topic, got: {topics}"
 
     def test_extra_fields_included_in_response(self):
-        """durationMin and required should also be present per the endpoint spec."""
         response = client.post("/cpd/search", json={"query": "compliance ethics"})
-        data = response.json()
-        result = data["results"][0]
+        result = response.json()["results"][0]
         assert "durationMin" in result
         assert "required" in result
 
 
 # ---------------------------------------------------------------------------
-# POST /match  (smoke test — not the primary focus but confirms it still works)
+# POST /match  (smoke — confirms no regression from CPD additions)
 # ---------------------------------------------------------------------------
 
 class TestMatch:

@@ -37,7 +37,7 @@ type StoreValue = {
   accessToken: string | null;
   setAdvisorId: (id: string) => void;
   setPartnerId: (id: string) => void;
-  setAccessToken: (token: string) => void;
+  setAccessToken: (token: string | null) => void;
   addReferral: (input: IntroduceInput) => void;
   updateReferralStatus: (id: string, status: ReferralStatus) => void;
   completeModule: (moduleId: string) => void;
@@ -105,27 +105,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const completeModule = useCallback(
     (moduleId: string) => {
-      let isNew = false;
-      setCompletedModuleIds((prev) => {
-        if (prev.includes(moduleId)) return prev;
-        isNew = true;
-        return [...prev, moduleId];
-      });
-      if (isNew) {
-        const mod = modules.find((m) => m.id === moduleId);
-        const advisor = getAdvisor(advisorId);
-        const deadline = advisor?.cpdDeadline
-          ? new Date(advisor.cpdDeadline).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" })
-          : "quarter-end";
-        if (mod) {
-          pushToast(
-            `+${mod.credits} CPD credit${mod.credits > 1 ? "s" : ""} earned`,
-            `"${mod.title}" complete · MAS FAA-N13 deadline: ${deadline}`,
-          );
-        }
+      // Read current snapshot — if already present, skip entirely (idempotent)
+      if (completedModuleIds.includes(moduleId)) return;
+      setCompletedModuleIds((prev) => [...prev, moduleId]);
+      const mod = modules.find((m) => m.id === moduleId);
+      const advisor = getAdvisor(advisorId);
+      const deadline = advisor?.cpdDeadline
+        ? new Date(advisor.cpdDeadline).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" })
+        : "quarter-end";
+      if (mod) {
+        pushToast(
+          `+${mod.credits} CPD credit${mod.credits > 1 ? "s" : ""} earned`,
+          `"${mod.title}" complete · MAS FAA-N13 deadline: ${deadline}`,
+        );
       }
     },
-    [advisorId, pushToast],
+    [advisorId, completedModuleIds, pushToast],
   );
 
   const value = useMemo(
@@ -145,7 +140,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       pushToast,
       dismissToast,
     }),
-    [referrals, advisorId, partnerId, completedModuleIds, accessToken, toasts, addReferral, updateReferralStatus, completeModule, pushToast, dismissToast],
+    [referrals, advisorId, partnerId, completedModuleIds, accessToken, toasts,
+     setAdvisorId, setPartnerId, setAccessToken,
+     addReferral, updateReferralStatus, completeModule, pushToast, dismissToast],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

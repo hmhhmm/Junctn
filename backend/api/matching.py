@@ -1,16 +1,10 @@
 from __future__ import annotations
-import math
 import numpy as np
 from fastapi import APIRouter
 from pydantic import BaseModel
-from sentence_transformers import SentenceTransformer
+from backend.api._shared_model import _model
 
 router = APIRouter(prefix="/match", tags=["matching"])
-
-# Model loaded once at startup and cached
-print("Loading embedding model…")
-_model = SentenceTransformer("all-MiniLM-L6-v2")
-print("Model ready.")
 
 PARTNERS = [
     {"id": "ptr-1", "name": "Meridian Trust Advisory", "specialty": "Estate & Trust", "region": "Central",
