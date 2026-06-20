@@ -10,25 +10,27 @@ interface Props {
   clientName?: string;
 }
 
-const SOURCE_COLOR: Record<string, string> = {
-  "MAS":               "#0f766e",
-  "Bloomberg":         "#f59e0b",
-  "CNA":               "#6366f1",
-  "Straits Times":     "#10b981",
-  "Reuters":           "#ef4444",
-  "Business Times":    "#8b5cf6",
-  "Forbes":            "#ec4899",
-  "EdgeProp":          "#0ea5e9",
-  "Edge Singapore":    "#0ea5e9",
-  "Lianhe":            "#f97316",
-  "Singapore Business": "#64748b",
+// 5 semantic tone buckets — token-safe, dark-mode safe
+const SOURCE_TONE: Record<string, { bg: string; color: string }> = {
+  regulatory: { bg: "var(--ok-soft)",      color: "var(--ok)" },      // MAS, regulators
+  financial:  { bg: "var(--warn-soft)",     color: "var(--warn)" },    // Bloomberg, Reuters, Business Times
+  general:    { bg: "var(--accent-soft)",   color: "var(--accent-ink)" }, // CNA, Straits Times, Forbes
+  property:   { bg: "var(--surface-raised)", color: "var(--ink-soft)" }, // EdgeProp, Edge Singapore
+  default:    { bg: "var(--surface-raised)", color: "var(--ink-soft)" },
 };
 
-function sourceColor(source: string): string {
-  for (const [key, color] of Object.entries(SOURCE_COLOR)) {
-    if (source.toLowerCase().includes(key.toLowerCase())) return color;
+const SOURCE_BUCKET: Record<string, keyof typeof SOURCE_TONE> = {
+  "MAS": "regulatory",
+  "Bloomberg": "financial", "Reuters": "financial", "Business Times": "financial",
+  "CNA": "general", "Straits Times": "general", "Forbes": "general", "Lianhe": "general", "Singapore Business": "general",
+  "EdgeProp": "property", "Edge Singapore": "property",
+};
+
+function sourceTone(source: string): { bg: string; color: string } {
+  for (const [key, bucket] of Object.entries(SOURCE_BUCKET)) {
+    if (source.toLowerCase().includes(key.toLowerCase())) return SOURCE_TONE[bucket];
   }
-  return "#64748b";
+  return SOURCE_TONE.default;
 }
 
 function ShareButton({ item, clientName }: { item: NewsItem; clientName?: string }) {
@@ -100,7 +102,7 @@ export function EvidenceRail({ items, clientName }: Props) {
           Articles matched to this client&apos;s needs and interests — share directly via email.
         </p>
         {items.map((item) => {
-          const color = sourceColor(item.source);
+          const tone = sourceTone(item.source);
           return (
             <div
               key={item.id}
@@ -110,7 +112,7 @@ export function EvidenceRail({ items, clientName }: Props) {
               <div className="mb-2 flex items-center gap-2">
                 <span
                   className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
-                  style={{ background: `${color}14`, color }}
+                  style={{ background: tone.bg, color: tone.color }}
                 >
                   {item.source}
                 </span>

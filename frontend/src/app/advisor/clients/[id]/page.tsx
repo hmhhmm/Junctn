@@ -5,7 +5,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  Sparkles,
   Network,
   MessageSquare,
   Phone,
@@ -46,7 +45,7 @@ export default function ClientPage({ params }: { params: { id: string } }) {
   const advisor = getAdvisor(client.advisorId)!;
   const openReferrals = referrals.filter((r) => r.clientId === id);
   const sources = client.notes.filter((n) => n.source);
-  const fmtAum = `S$${(client.aum / 1_000_000).toFixed(2)}M`;
+  const fmtAum = `RM${(client.aum / 1_000_000).toFixed(2)}M`;
 
   return (
     <ClientPageInner
@@ -80,7 +79,7 @@ function ClientPageInner({
   useEffect(() => {
     const shell = document.getElementById("app-layout") as HTMLElement | null;
     if (!shell) return;
-    shell.style.transition = "padding-right 300ms cubic-bezier(.22,.68,0,1.15)";
+    shell.style.transition = "padding-right 300ms cubic-bezier(0.22,1,0.36,1)";
     shell.style.paddingRight = botOpen ? "340px" : "0";
     return () => { shell.style.paddingRight = ""; shell.style.transition = ""; };
   }, [botOpen]);
@@ -237,7 +236,7 @@ function ClientPageInner({
               <ul className="flex flex-col gap-2.5">
                 {sources.map((s) => (
                   <li key={s.id} className="flex gap-2.5">
-                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent" />
+                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-ink-faint" />
                     <div>
                       <p className="text-[13px] text-ink">{s.summary}</p>
                       <p className="mt-0.5 text-[11px] text-ink-faint">

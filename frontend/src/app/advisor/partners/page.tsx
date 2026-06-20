@@ -76,14 +76,13 @@ export default function PartnersPage() {
             {recommended.map((m) => (
               <div
                 key={m.id}
-                className="flex flex-col rounded-xl border bg-surface p-4 shadow-sm"
-                style={{ borderColor: "rgba(45,212,191,0.4)" }}
+                className="flex flex-col rounded-xl border border-line bg-surface p-4 shadow-sm"
               >
                 <div className="flex items-center gap-3">
                   <Avatar initials={m.initials} size="md" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-semibold text-ink">{m.name}</p>
-                    <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-faint">
+                    <p className="mt-0.5 text-[11px] text-ink-faint">
                       {m.specialty} · {m.region}
                     </p>
                   </div>
@@ -177,7 +176,7 @@ export default function PartnersPage() {
                 <Avatar initials={partner.initials} size="md" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[14px] font-semibold text-ink">{partner.name}</p>
-                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-ink-faint">
+                  <p className="mt-1 text-[11px] text-ink-faint">
                     {partner.specialty} · {partner.region}
                   </p>
                 </div>
