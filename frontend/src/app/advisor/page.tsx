@@ -17,6 +17,7 @@ import { CpdCard } from "@/components/advisor/CpdCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
+import { Tooltip } from "@/components/ui/tooltip";
 import type { ApiPartnerMatch } from "@/app/api/match/route";
 
 // ── Metric strip ────────────────────────────────────────────────────────────
@@ -38,7 +39,7 @@ function MetricStrip({
     { label: `${activeClients} active clients`, href: "/advisor/clients", tone: "neutral" as const },
     { label: `${openReferrals} open referral${openReferrals !== 1 ? "s" : ""}`, href: "/advisor/clients", tone: openReferrals > 0 ? "accent" as const : "neutral" as const },
     { label: `${cpdEarned}/${cpdRequired} CPD credits`, href: "/advisor/cpd", tone: cpdEarned >= cpdRequired ? "ok" as const : "warn" as const },
-    ...(gap ? [{ label: `Gap: ${gap}`, href: "/advisor/partners", tone: "alert" as const }] : []),
+    ...(gap ? [{ label: `Portfolio gap: ${gap}`, href: "/advisor/partners", tone: "alert" as const, tooltip: "A specialist area your clients need that isn't yet covered in your network. Visit Partners to find a match." }] : []),
   ];
 
   const toneClass: Record<string, string> = {
@@ -52,7 +53,7 @@ function MetricStrip({
   return (
     <nav aria-label="Advisor metrics" className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-1 py-2.5">
       {items.map((item, i) => (
-        <span key={i} className="flex items-center gap-2">
+        <span key={i} className="flex items-center gap-1.5">
           {i > 0 && <span className="hidden text-ink-faint/40 sm:inline" aria-hidden="true">·</span>}
           <Link
             href={item.href}
@@ -60,6 +61,9 @@ function MetricStrip({
           >
             {item.label}
           </Link>
+          {"tooltip" in item && item.tooltip && (
+            <Tooltip content={item.tooltip} icon />
+          )}
         </span>
       ))}
     </nav>
@@ -315,10 +319,12 @@ export default function AdvisorDashboard() {
                           <p className="truncate text-[13px] font-semibold text-ink">{m.name}</p>
                           <p className="text-[11px] text-ink-faint">{m.specialty} · {m.region}</p>
                         </div>
-                        <div className="text-right">
-                          <p className="text-[18px] font-bold leading-none text-accent-ink">{m.score}</p>
-                          <p className="text-[10px] uppercase tracking-wide text-ink-faint">match</p>
-                        </div>
+                        <Tooltip content="Compatibility score (0–100) based on specialist area and region overlap with your clients' needs.">
+                          <div className="cursor-help text-right">
+                            <p className="text-[18px] font-bold leading-none text-accent-ink">{m.score}</p>
+                            <p className="text-[10px] uppercase tracking-wide text-ink-faint">match</p>
+                          </div>
+                        </Tooltip>
                       </div>
                       {matchClient ? (
                         <IntroduceDialog

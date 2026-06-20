@@ -38,7 +38,8 @@ export function CpdCard({ advisorId }: { advisorId: string }) {
                 : "CPD requirement met "}
             </p>
             <p className="mt-0.5 text-[12px] text-ink-faint">
-              MAS FAA-N13 · {cpd.daysToDeadline} days to deadline
+              <abbr title="MAS Financial Advisers Act Notice 13 — Singapore's mandatory CPD requirement for licensed advisors" className="cursor-help no-underline">MAS FAA-N13</abbr>
+              {" "}· {cpd.daysToDeadline} days to deadline
             </p>
           </div>
         </div>
