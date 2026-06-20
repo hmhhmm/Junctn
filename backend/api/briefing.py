@@ -42,6 +42,7 @@ def _run_pipeline(job: Job) -> None:
 
         job.trace_events = result["trace_events"]
         job.full_text = result["synthesised_text"]
+        job.calendar_data = result.get("calendar_data", [])
         job.status = "complete"
         update_job(job)
     except Exception as exc:
@@ -85,7 +86,7 @@ async def stream_briefing(job_id: str) -> StreamingResponse:
                 sent_tokens += 1
 
             if job.status == "complete":
-                yield _format_event("done", json.dumps({"full_text": job.full_text}))
+                yield _format_event("done", json.dumps({"full_text": job.full_text, "calendar_data": job.calendar_data}))
                 break
 
             if job.status == "error":

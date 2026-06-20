@@ -21,6 +21,7 @@ class Job:
         self.trace_events: list[dict] = []
         self.tokens: list[str] = []
         self.full_text: str = ""
+        self.calendar_data: list[dict] = []
         self.error: str | None = None
 
     def to_dict(self) -> dict:
@@ -31,6 +32,7 @@ class Job:
             "trace_events": self.trace_events,
             "tokens": self.tokens,
             "full_text": self.full_text,
+            "calendar_data": self.calendar_data,
             "error": self.error,
         }
 
@@ -41,6 +43,7 @@ class Job:
         job.trace_events = data["trace_events"]
         job.tokens = data["tokens"]
         job.full_text = data["full_text"]
+        job.calendar_data = data.get("calendar_data", [])
         job.error = data["error"]
         return job
 

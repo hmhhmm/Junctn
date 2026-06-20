@@ -170,7 +170,7 @@ export default function AdvisorDashboard() {
   // startBriefing (called in useEffect) restores from sessionStorage after mount.
   const [jobId, setJobId] = useState<string | null>(null);
   const [backendError, setBackendError] = useState(false);
-  const { tokens, traceEvents, isDone, error } = useBriefingStream(jobId);
+  const { tokens, traceEvents, calendarData, isDone, error } = useBriefingStream(jobId);
 
   const startBriefing = useCallback(async (force = false) => {
     // Reuse the existing job for this session (tab switch / back-navigation).
@@ -303,7 +303,7 @@ export default function AdvisorDashboard() {
         <div className="flex flex-col gap-5">
           <AttentionRail items={attentionItems} />
           <div id="calendar">
-            <LiveCalendar fallbackMeetings={brief.meetings} />
+            <LiveCalendar fallbackMeetings={brief.meetings} agentMeetings={calendarData} />
           </div>
           <LiveGmail maxItems={5} />
         </div>

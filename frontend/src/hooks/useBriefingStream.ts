@@ -10,9 +10,20 @@ export interface TraceEvent {
   summary: string;
 }
 
+export interface AgentMeeting {
+  id: string;
+  time: string;
+  title: string;
+  channel: string;
+  meta: string;
+  client_id: string | null;
+  flag: { kind: string; text: string } | null;
+}
+
 interface BriefingStreamState {
   tokens: string;
   traceEvents: TraceEvent[];
+  calendarData: AgentMeeting[];
   isDone: boolean;
   error: string | null;
 }
@@ -20,6 +31,7 @@ interface BriefingStreamState {
 export function useBriefingStream(jobId: string | null): BriefingStreamState {
   const [tokens, setTokens] = useState("");
   const [traceEvents, setTraceEvents] = useState<TraceEvent[]>([]);
+  const [calendarData, setCalendarData] = useState<AgentMeeting[]>([]);
   const [isDone, setIsDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const sourceRef = useRef<EventSource | null>(null);
@@ -30,6 +42,7 @@ export function useBriefingStream(jobId: string | null): BriefingStreamState {
     // Reset state for new job
     setTokens("");
     setTraceEvents([]);
+    setCalendarData([]);
     setIsDone(false);
     setError(null);
 
@@ -53,8 +66,12 @@ export function useBriefingStream(jobId: string | null): BriefingStreamState {
       setTraceEvents((prev) => [...prev, event]);
     });
 
-    source.addEventListener("done", () => {
+    source.addEventListener("done", (e) => {
       clearTimeout(timeout);
+      try {
+        const payload = JSON.parse((e as MessageEvent).data ?? "{}");
+        if (Array.isArray(payload.calendar_data)) setCalendarData(payload.calendar_data);
+      } catch { /* ignore parse errors */ }
       setIsDone(true);
       source.close();
     });
@@ -77,5 +94,5 @@ export function useBriefingStream(jobId: string | null): BriefingStreamState {
     };
   }, [jobId]);
 
-  return { tokens, traceEvents, isDone, error };
+  return { tokens, traceEvents, calendarData, isDone, error };
 }

@@ -18,6 +18,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CreateEventDialog } from "@/components/advisor/CreateEventDialog";
 import type { Meeting } from "@/lib/types";
+import type { AgentMeeting } from "@/hooks/useBriefingStream";
 import { cn } from "@/lib/utils";
 
 interface CalendarEvent {
@@ -158,11 +159,25 @@ function RealEvents({ events }: { events: CalendarEvent[] }) {
 
 // ─── Smart wrapper ────────────────────────────────────────────────────────────
 
-interface Props {
-  fallbackMeetings: Meeting[];
+function agentMeetingToMeeting(m: AgentMeeting): Meeting {
+  return {
+    id: m.id,
+    advisorId: "",
+    time: m.time,
+    title: m.title,
+    channel: m.channel as Meeting["channel"],
+    meta: m.meta,
+    clientId: m.client_id ?? undefined,
+    flag: m.flag ? { kind: m.flag.kind as NonNullable<Meeting["flag"]>["kind"], text: m.flag.text } : undefined,
+  };
 }
 
-export function LiveCalendar({ fallbackMeetings }: Props) {
+interface Props {
+  fallbackMeetings: Meeting[];
+  agentMeetings?: AgentMeeting[];
+}
+
+export function LiveCalendar({ fallbackMeetings, agentMeetings }: Props) {
   const [events, setEvents] = useState<CalendarEvent[] | null>(null);
   const [connected, setConnected] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
@@ -216,10 +231,15 @@ export function LiveCalendar({ fallbackMeetings }: Props) {
           <RealEvents events={events} />
         ) : (
           <>
-            <MockMeetings meetings={fallbackMeetings} />
+            <MockMeetings meetings={agentMeetings && agentMeetings.length > 0
+              ? agentMeetings.map(agentMeetingToMeeting)
+              : fallbackMeetings}
+            />
             <p className="mt-3 flex items-center gap-1.5 border-t border-line pt-3 text-[11px] text-ink-faint">
               <CalendarDays className="size-3.5" />
-              Showing sample data ·{" "}
+              {agentMeetings && agentMeetings.length > 0
+                ? "Showing AI-fetched schedule · "
+                : "Showing sample data · "}
               <Link href="/advisor/settings" className="font-medium text-accent hover:underline">
                 Connect Google Calendar for live events
               </Link>
