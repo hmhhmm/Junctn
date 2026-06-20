@@ -25,11 +25,13 @@ def test_gemini_ping():
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel("gemini-2.5-flash")
 
-    response = model.generate_content("ping")
+    response = model.generate_content("What is 10+1?")
 
     assert response is not None
     assert response.text is not None
-    assert len(response.text.strip()) > 0
+    answer = response.text.strip()
+    print(answer)
+    assert len(answer) > 0
 
 
 @pytest.mark.skipif(
