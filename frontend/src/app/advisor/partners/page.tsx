@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight, RefreshCw } from "lucide-react";
+import { ArrowRight, RefreshCw, GitBranch } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { partners, getClientsByAdvisor, SPECIALTIES, REGIONS } from "@/lib/data";
 import { Avatar } from "@/components/ui/avatar";
 import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
 import { Button } from "@/components/ui/button";
+import { ReferralKanban } from "@/components/advisor/ReferralKanban";
 import type { ApiPartnerMatch } from "@/lib/types";
 
 export default function PartnersPage() {
@@ -59,6 +60,23 @@ export default function PartnersPage() {
         <p className="mt-1 text-[13px] text-ink-soft">
           {partners.length} specialists · AI finds the right match for each client
         </p>
+      </div>
+
+      {/* ── Referral Kanban ───────────────────────────────────────── */}
+      <section className="mb-10">
+        <div className="mb-4 flex items-center gap-2">
+          <GitBranch className="size-4 text-ink-soft" />
+          <h2 className="text-[14px] font-semibold text-ink">Referral pipeline</h2>
+          <span className="ml-1 text-[12px] text-ink-faint">Suggested → Introduced → In Progress → Closed</span>
+        </div>
+        <ReferralKanban advisorId={advisorId} />
+      </section>
+
+      {/* ── Divider ────────────────────────────────────────────────── */}
+      <div className="mb-8 flex items-center gap-3">
+        <div className="h-px flex-1 bg-line" />
+        <span className="text-[12px] text-ink-faint">AI recommendations</span>
+        <div className="h-px flex-1 bg-line" />
       </div>
 
       {/* ── AI Recommended ────────────────────────────────────────── */}
