@@ -16,7 +16,7 @@ import {
   getAdvisor,
   TODAY,
 } from "./data";
-import type { Referral, ReferralStatus } from "./types";
+import type { Referral, ReferralStatus, ApiPartnerMatch, BriefingCacheEntry } from "./types";
 
 type ToastMsg = { id: number; title: string; detail?: string };
 
@@ -35,9 +35,13 @@ type StoreValue = {
   partnerId: string;
   completedModuleIds: string[];
   accessToken: string | null;
+  matchCache: Record<string, ApiPartnerMatch[]>;
+  briefingCache: Record<string, BriefingCacheEntry>;
   setAdvisorId: (id: string) => void;
   setPartnerId: (id: string) => void;
   setAccessToken: (token: string | null) => void;
+  setMatchCache: (advisorId: string, matches: ApiPartnerMatch[]) => void;
+  setBriefingCache: (advisorId: string, entry: BriefingCacheEntry) => void;
   addReferral: (input: IntroduceInput) => void;
   updateReferralStatus: (id: string, status: ReferralStatus) => void;
   completeModule: (moduleId: string) => void;
@@ -61,6 +65,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [partnerId, setPartnerId] = useState(partners[0].id);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [toasts, setToasts] = useState<ToastMsg[]>([]);
+  const [matchCache, setMatchCacheRaw] = useState<Record<string, ApiPartnerMatch[]>>({});
+  const [briefingCache, setBriefingCacheRaw] = useState<Record<string, BriefingCacheEntry>>({});
   const [completedModuleIds, setCompletedModuleIds] = useState<string[]>(() =>
     getInitialCompletedIds(DEFAULT_ADVISOR_ID),
   );
@@ -68,6 +74,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const setAdvisorId = useCallback((id: string) => {
     setAdvisorIdRaw(id);
     setCompletedModuleIds(getInitialCompletedIds(id));
+    // Clear AI caches on advisor switch — different advisor = different results
+    setMatchCacheRaw({});
+    setBriefingCacheRaw({});
+  }, []);
+
+  const setMatchCache = useCallback((advId: string, matches: ApiPartnerMatch[]) => {
+    setMatchCacheRaw((prev) => ({ ...prev, [advId]: matches }));
+  }, []);
+
+  const setBriefingCache = useCallback((advId: string, entry: BriefingCacheEntry) => {
+    setBriefingCacheRaw((prev) => ({ ...prev, [advId]: entry }));
   }, []);
 
   const pushToast = useCallback((title: string, detail?: string) => {
@@ -130,9 +147,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       partnerId,
       completedModuleIds,
       accessToken,
+      matchCache,
+      briefingCache,
       setAdvisorId,
       setPartnerId,
       setAccessToken,
+      setMatchCache,
+      setBriefingCache,
       addReferral,
       updateReferralStatus,
       completeModule,
@@ -140,8 +161,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       pushToast,
       dismissToast,
     }),
-    [referrals, advisorId, partnerId, completedModuleIds, accessToken, toasts,
-     setAdvisorId, setPartnerId, setAccessToken,
+    [referrals, advisorId, partnerId, completedModuleIds, accessToken, matchCache, briefingCache,
+     toasts, setAdvisorId, setPartnerId, setAccessToken, setMatchCache, setBriefingCache,
      addReferral, updateReferralStatus, completeModule, pushToast, dismissToast],
   );
 

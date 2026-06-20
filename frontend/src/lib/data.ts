@@ -1,6 +1,8 @@
 import type {
   Advisor,
   Client,
+  ClientProfile,
+  NewsItem,
   Partner,
   Referral,
   Module,
@@ -112,6 +114,7 @@ const c = (
   aum: number,
   nextMeeting?: string,
   notes: Client["notes"] = [],
+  profile?: ClientProfile,
 ): Client => ({
   id,
   advisorId,
@@ -128,6 +131,7 @@ const c = (
   status,
   aum,
   notes,
+  profile,
 });
 
 export const clients: Client[] = [
@@ -143,28 +147,26 @@ export const clients: Client[] = [
     4_200_000,
     "2026-06-19T09:30",
     [
-      {
-        id: "n1",
-        date: "2026-06-17",
-        channel: "Meeting",
-        summary:
-          "Mentioned wanting to set up a trust for his two children before year end. Worried about probate delays.",
-        source: true,
-      },
-      {
-        id: "n2",
-        date: "2026-05-29",
-        channel: "Call",
-        summary: "Reviewed Q2 portfolio. Comfortable with current allocation; wants to revisit succession of the F&B business.",
-        source: true,
-      },
-      {
-        id: "n3",
-        date: "2026-04-12",
-        channel: "Email",
-        summary: "Sent updated insurance summary. Daughter starting university in 2027.",
-      },
+      { id: "n1", date: "2026-06-17", channel: "Meeting",
+        summary: "Mentioned wanting to set up a trust for his two children before year end. Worried about probate delays.", source: true },
+      { id: "n2", date: "2026-05-29", channel: "Call",
+        summary: "Reviewed Q2 portfolio. Comfortable with current allocation; wants to revisit succession of the F&B business.", source: true },
+      { id: "n3", date: "2026-04-12", channel: "Email",
+        summary: "Sent updated insurance summary. Daughter starting university in 2027." },
     ],
+    {
+      interests: ["Golf", "Fine dining", "F&B business ownership", "Art collecting"],
+      family: ["Wife (Grace)", "Daughter starting NUS 2027", "Son (Secondary 3)"],
+      importantDates: [
+        { label: "Birthday", date: "03-15" },
+        { label: "Wedding anniversary", date: "09-22" },
+        { label: "Company founding day", date: "11-08" },
+      ],
+      communicationStyle: "Formal, prefers email for documents, WhatsApp for quick updates. Responds promptly.",
+      giftIdeas: ["Premium wine (Bordeaux)", "Golf equipment", "Restaurant vouchers", "Art book"],
+      lastPersonalTouch: "2026-05-20",
+      sourceNote: "Derived from 3 meeting notes and 2 call logs",
+    },
   ),
   c(
     "cli-2",
@@ -177,20 +179,23 @@ export const clients: Client[] = [
     980_000,
     "2026-06-19T11:00",
     [
-      {
-        id: "n4",
-        date: "2026-06-05",
-        channel: "WhatsApp",
-        summary: "Replied to last note — asked whether to top up SRS before the meeting. Awaiting your response.",
-        source: true,
-      },
-      {
-        id: "n5",
-        date: "2026-03-20",
-        channel: "Meeting",
-        summary: "Annual review. On track for retirement at 62. Risk appetite lowered after market dip.",
-      },
+      { id: "n4", date: "2026-06-05", channel: "WhatsApp",
+        summary: "Replied to last note — asked whether to top up SRS before the meeting. Awaiting your response.", source: true },
+      { id: "n5", date: "2026-03-20", channel: "Meeting",
+        summary: "Annual review. On track for retirement at 62. Risk appetite lowered after market dip." },
     ],
+    {
+      interests: ["Yoga", "Travelling (Japan, Europe)", "Cooking classes", "Volunteering at SPCA"],
+      family: ["Husband (retired teacher)", "Two adult daughters (both overseas)"],
+      importantDates: [
+        { label: "Birthday", date: "09-08" },
+        { label: "Retirement target", date: "2028-01-01" },
+      ],
+      communicationStyle: "Warm and conversational. Prefers face-to-face or calls. Appreciates follow-up summaries via email.",
+      giftIdeas: ["Wellness hamper", "Japan travel guide", "Cooking class voucher"],
+      lastPersonalTouch: "2026-03-20",
+      sourceNote: "Derived from 2 meeting notes",
+    },
   ),
   c(
     "cli-3",
@@ -203,14 +208,21 @@ export const clients: Client[] = [
     310_000,
     "2026-06-19T14:00",
     [
-      {
-        id: "n6",
-        date: "2026-06-18",
-        channel: "Call",
-        summary: "Found a resale condo, needs mortgage refinancing advice before option expires next week.",
-        source: true,
-      },
+      { id: "n6", date: "2026-06-18", channel: "Call",
+        summary: "Found a resale condo, needs mortgage refinancing advice before option expires next week.", source: true },
     ],
+    {
+      interests: ["Cycling (weekend rides)", "Football (Liverpool fan)", "Tech startups", "Coffee"],
+      family: ["Wife (Priya, engineer)", "Newborn son (3 months)", "Planning second child"],
+      importantDates: [
+        { label: "Birthday", date: "07-14" },
+        { label: "Wedding anniversary", date: "02-14" },
+      ],
+      communicationStyle: "Direct and brief. Prefers WhatsApp voice notes or calls. Not a fan of long emails.",
+      giftIdeas: ["Cycling gear", "Baby gift set", "Specialty coffee subscription"],
+      lastPersonalTouch: "2026-05-01",
+      sourceNote: "Derived from 1 call note",
+    },
   ),
   c(
     "cli-4",
@@ -223,13 +235,22 @@ export const clients: Client[] = [
     1_650_000,
     "2026-06-19T16:00",
     [
-      {
-        id: "n7",
-        date: "2026-05-02",
-        channel: "Meeting",
-        summary: "Wants to update her will and ensure the grandchildren are provided for. No notes captured after the meeting.",
-      },
+      { id: "n7", date: "2026-05-02", channel: "Meeting",
+        summary: "Wants to update her will and ensure the grandchildren are provided for. No notes captured after the meeting." },
     ],
+    {
+      interests: ["Gardening", "Cantonese opera", "Temple volunteering", "Reading (Chinese classics)"],
+      family: ["Three adult children", "Five grandchildren (ages 4–12)", "Late husband (Mr Chua, 2024)"],
+      importantDates: [
+        { label: "Birthday", date: "11-22" },
+        { label: "Eldest grandchild birthday", date: "04-05" },
+        { label: "Late husband's anniversary", date: "08-18" },
+      ],
+      communicationStyle: "Prefers Mandarin or Cantonese. Formal and relationship-driven. Appreciates in-person meetings.",
+      giftIdeas: ["Premium mooncakes", "Orchid arrangement", "Charitable donation in her name"],
+      lastPersonalTouch: "2026-05-02",
+      sourceNote: "Derived from 1 meeting note",
+    },
   ),
   c(
     "cli-5",
@@ -242,14 +263,22 @@ export const clients: Client[] = [
     2_100_000,
     undefined,
     [
-      {
-        id: "n8",
-        date: "2026-06-10",
-        channel: "Meeting",
-        summary: "Expanding logistics business, hiring 15 staff. Asked about keyman insurance and partner buyout cover.",
-        source: true,
-      },
+      { id: "n8", date: "2026-06-10", channel: "Meeting",
+        summary: "Expanding logistics business, hiring 15 staff. Asked about keyman insurance and partner buyout cover.", source: true },
     ],
+    {
+      interests: ["Tennis", "Hawker food tours", "Photography (street)", "Golf (occasional)"],
+      family: ["Wife (Linda, runs the accounts)", "Sister is co-director", "Father in assisted care"],
+      importantDates: [
+        { label: "Birthday", date: "07-03" },
+        { label: "Company anniversary", date: "04-18" },
+        { label: "Father's birthday", date: "01-28" },
+      ],
+      communicationStyle: "Direct and results-oriented. Prefers calls, uses texts for quick follow-ups. Meeting agendas appreciated.",
+      giftIdeas: ["Tennis racket accessories", "Camera accessories", "Hawker heritage food guide"],
+      lastPersonalTouch: "2026-06-10",
+      sourceNote: "Derived from 1 meeting note",
+    },
   ),
   c(
     "cli-6",
@@ -262,14 +291,21 @@ export const clients: Client[] = [
     540_000,
     undefined,
     [
-      {
-        id: "n9",
-        date: "2026-06-14",
-        channel: "Email",
-        summary: "New RSU vesting in July — asked about tax-efficient ways to diversify out of company stock.",
-        source: true,
-      },
+      { id: "n9", date: "2026-06-14", channel: "Email",
+        summary: "New RSU vesting in July — asked about tax-efficient ways to diversify out of company stock.", source: true },
     ],
+    {
+      interests: ["Pilates", "Sustainable living", "Wine tasting", "Weekend hiking"],
+      family: ["Partner (Daniel, architect)", "No children (by choice)", "Cat owner"],
+      importantDates: [
+        { label: "Birthday", date: "03-29" },
+        { label: "RSU vesting", date: "2026-07-15" },
+      ],
+      communicationStyle: "Detail-oriented, prefers email with bullet-point summaries. Appreciates data and charts.",
+      giftIdeas: ["Eco-friendly wellness products", "Wine tasting experience", "Hiking gear"],
+      lastPersonalTouch: "2026-04-15",
+      sourceNote: "Derived from 1 email note",
+    },
   ),
   c(
     "cli-7",
@@ -962,4 +998,154 @@ export function getTopPartners(referrals: Referral[], limit = 5) {
     })
     .sort((a, b) => b.closed - a.closed || b.total - a.total)
     .slice(0, limit);
+}
+
+// ---------------------------------------------------------------------------
+// News & Evidence Feed — seeded headlines scored by client needs / interests
+// ---------------------------------------------------------------------------
+export const newsItems: NewsItem[] = [
+  {
+    id: "news-1",
+    headline: "MAS tightens trust structuring requirements for high-net-worth clients",
+    source: "Business Times",
+    date: "2026-06-18",
+    summary: "The Monetary Authority of Singapore has issued updated guidelines requiring advisors to document trust beneficiary intent more rigorously, effective Q3 2026.",
+    tags: ["Estate & Trust", "Legal / Will", "HNW"],
+    url: "https://www.businesstimes.com.sg/wealth",
+  },
+  {
+    id: "news-2",
+    headline: "Singapore F&B sector records strongest Q1 growth in five years",
+    source: "Straits Times",
+    date: "2026-06-15",
+    summary: "Food & beverage businesses in Singapore posted an average 18% revenue increase in Q1 2026, driven by tourism recovery and consumer spending. Business owners are revisiting succession and insurance structures.",
+    tags: ["Business Succession", "Corporate Insurance", "F&B business ownership"],
+    url: "https://www.straitstimes.com/business",
+  },
+  {
+    id: "news-3",
+    headline: "CPF Retirement Sum to increase by 3.5% from 2027 — what it means for your clients",
+    source: "Lianhe Zaobao",
+    date: "2026-06-14",
+    summary: "The Basic, Full, and Enhanced Retirement Sums will be adjusted upward, affecting SRS contribution strategies and retirement income projections for clients approaching 55.",
+    tags: ["Retirement", "Investments", "Pre-retiree"],
+    url: "https://www.cpf.gov.sg/member/retirement-income",
+  },
+  {
+    id: "news-4",
+    headline: "HDB and private resale volumes surge — refinancing window opens for existing mortgage holders",
+    source: "EdgeProp Singapore",
+    date: "2026-06-13",
+    summary: "With fixed-rate packages repricing downward, financial advisors are recommending clients review existing mortgage structures before the window closes in Q3.",
+    tags: ["Mortgage", "Property", "Young family"],
+    url: "https://www.edgeprop.sg/property-news",
+  },
+  {
+    id: "news-5",
+    headline: "Budget 2026: Key tax changes affecting RSU holders and high-income professionals",
+    source: "Business Times",
+    date: "2026-06-10",
+    summary: "New progressive tax treatment for vested RSUs above $150,000 takes effect from YA2027. Advisors are advised to front-run the conversation with affected clients before July vesting cycles.",
+    tags: ["Tax Planning", "Investments", "Professional"],
+    url: "https://www.businesstimes.com.sg/government-economy/budget",
+  },
+  {
+    id: "news-6",
+    headline: "Keyman insurance gaps leave SMEs exposed — survey finds 60% underinsured",
+    source: "Singapore Business Review",
+    date: "2026-06-09",
+    summary: "A MAS-commissioned study found that the majority of SMEs with 10–50 employees have no formal keyman or partner buyout coverage, representing a significant advisory opportunity.",
+    tags: ["Corporate Insurance", "Business Succession", "SME", "Business owner"],
+    url: "https://sbr.com.sg/insurance",
+  },
+  {
+    id: "news-7",
+    headline: "Estate planning for blended families: new MAS guidance on discretionary trusts",
+    source: "CNA",
+    date: "2026-06-07",
+    summary: "Updated guidance covers situations involving step-children, overseas beneficiaries, and digital assets — areas where traditional will structures may leave gaps.",
+    tags: ["Estate & Trust", "Legal / Will", "Legacy"],
+    url: "https://www.channelnewsasia.com/singapore/wealth-estate",
+  },
+  {
+    id: "news-8",
+    headline: "Golf club membership prices in Singapore hit decade high — wealth signal for advisors",
+    source: "Straits Times Lifestyle",
+    date: "2026-06-05",
+    summary: "Premium golf club memberships have appreciated 40% in two years, making them a material asset class for HNW clients. Advisors should review whether these are included in estate and trust planning.",
+    tags: ["Golf", "HNW", "Estate & Trust"],
+    url: "https://www.straitstimes.com/lifestyle/sports",
+  },
+  {
+    id: "news-9",
+    headline: "Singapore retail investors pivot to dividend strategies amid rate uncertainty",
+    source: "Business Times",
+    date: "2026-06-03",
+    summary: "With interest rates expected to plateau, retail investors are shifting from fixed deposits to dividend-yielding REITs and blue chips. Portfolio reviews are recommended for conservative clients.",
+    tags: ["Investments", "Retirement", "Conservative"],
+    url: "https://www.businesstimes.com.sg/companies-markets/banking-finance",
+  },
+  {
+    id: "news-10",
+    headline: "Digital assets and estate planning: MAS releases framework for crypto inheritance",
+    source: "CNA Tech",
+    date: "2026-05-30",
+    summary: "A new regulatory framework clarifies how digital assets should be declared in estate documents, affecting clients with crypto holdings above $50,000.",
+    tags: ["Estate & Trust", "Legal / Will", "Investments"],
+    url: "https://www.channelnewsasia.com/tech/fintech",
+  },
+  {
+    id: "news-11",
+    headline: "Succession planning for family businesses: lessons from Singapore's third-generation dilemma",
+    source: "Forbes Asia",
+    date: "2026-05-28",
+    summary: "Research shows that fewer than 30% of family-owned businesses successfully transition to the third generation. Structured succession agreements and insurance frameworks are the most effective mitigation.",
+    tags: ["Business Succession", "Family office", "Corporate Insurance"],
+    url: "https://www.forbes.com/asia/business/family-business",
+  },
+  {
+    id: "news-12",
+    headline: "Sustainable investing picks up among Singapore millennials — what advisors need to know",
+    source: "The Edge Singapore",
+    date: "2026-05-25",
+    summary: "ESG-aligned products now account for 22% of new unit trust inflows among the 30–45 demographic. Advisors with sustainability-literate clients should be prepared to discuss MAS's green investment taxonomy.",
+    tags: ["Investments", "Sustainable living", "Professional"],
+    url: "https://theedgesingapore.com/capital/esg",
+  },
+];
+
+// Return news items relevant to a client — scored by tag overlap
+export function getNewsForClient(client: Client, limit = 4): NewsItem[] {
+  const clientTags = [
+    ...client.needs,
+    ...client.tags,
+    ...(client.profile?.interests ?? []),
+  ].map((t) => t.toLowerCase());
+
+  return newsItems
+    .map((item) => ({
+      item,
+      score: item.tags.filter((t) => clientTags.some((ct) => ct.includes(t.toLowerCase()) || t.toLowerCase().includes(ct))).length,
+    }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({ item }) => item);
+}
+
+// Return warm-the-book queue — clients going cold on personal touch
+export function getWarmQueue(advisorId: string): Client[] {
+  const now = Date.now();
+  return clients
+    .filter((c) => c.advisorId === advisorId && c.status !== "dormant")
+    .map((c) => ({
+      client: c,
+      daysSinceTouch: c.profile?.lastPersonalTouch
+        ? Math.floor((now - new Date(c.profile.lastPersonalTouch).getTime()) / 86_400_000)
+        : Math.floor((now - new Date(c.lastContact).getTime()) / 86_400_000),
+    }))
+    .filter(({ daysSinceTouch }) => daysSinceTouch > 21)
+    .sort((a, b) => b.daysSinceTouch - a.daysSinceTouch)
+    .slice(0, 4)
+    .map(({ client }) => client);
 }

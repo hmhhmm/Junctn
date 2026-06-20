@@ -45,3 +45,33 @@ export async function draftFollowup(
 export function getBriefingStreamUrl(jobId: string): string {
   return `/api/briefing/stream/${jobId}`;
 }
+
+export interface OutreachPayload {
+  client: {
+    client_name: string;
+    interests: string[];
+    family: string[];
+    important_dates: { label: string; date: string }[];
+    communication_style: string;
+    gift_ideas: string[];
+    last_personal_touch: string | null;
+    recent_notes: string[];
+  };
+  outreach_type: "check_in" | "upcoming_date" | "news_share" | "review_reminder";
+}
+
+export async function draftOutreach(
+  token: string,
+  payload: OutreachPayload,
+): Promise<{ draft: string; outreach_type: string }> {
+  const res = await fetch("/api/relationship/draft-outreach", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`Outreach draft failed: ${res.status}`);
+  return res.json();
+}

@@ -24,6 +24,26 @@ export type Advisor = {
   cpdDeadline: string; // ISO date
 };
 
+export type ClientProfile = {
+  interests: string[];
+  family: string[];
+  importantDates: { label: string; date: string }[];
+  communicationStyle: string;
+  giftIdeas: string[];
+  lastPersonalTouch: string | null;
+  sourceNote: string; // e.g. "derived from 4 meeting notes"
+};
+
+export type NewsItem = {
+  id: string;
+  headline: string;
+  source: string;
+  date: string;
+  summary: string;
+  tags: string[]; // matches client needs/interests
+  url?: string;
+};
+
 export type Client = {
   id: string;
   advisorId: string;
@@ -36,6 +56,7 @@ export type Client = {
   status: ClientStatus;
   aum: number; // assets under management (SGD)
   notes: ContactNote[];
+  profile?: ClientProfile;
 };
 
 export type ContactNote = {
@@ -45,6 +66,31 @@ export type ContactNote = {
   summary: string;
   source?: boolean; // used as an AI memory source
 };
+
+export interface ApiPartnerMatch {
+  id: string;
+  name: string;
+  initials: string;
+  specialty: string;
+  region: string;
+  score: number;
+  reason: string;
+  successRate: number;
+  acceptanceRate: number;
+  avgDaysToClose: number;
+}
+
+export interface BriefingTraceEvent {
+  agent: string;
+  status: string;
+  timestamp: string;
+  summary: string;
+}
+
+export interface BriefingCacheEntry {
+  text: string;
+  traceEvents: BriefingTraceEvent[];
+}
 
 export type Partner = {
   id: string;
