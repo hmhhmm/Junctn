@@ -152,23 +152,26 @@ export default function CpdPage() {
       </div>
 
       {/* ── Category strip ───────────────────────────────────────────────── */}
-      <div className="mb-7 overflow-x-auto pb-1" aria-label="Progress by topic">
-        <div className="flex gap-3" style={{ minWidth: "max-content" }}>
-          {categoryBreakdown.filter((c) => c.moduleCount > 0).map((c) => {
-            const ringTone = c.pct === 100 ? "ok" : c.pct >= 50 ? "accent" : "warn";
-            const label = SHORT_LABEL[c.topic] ?? c.topic;
-            return (
-              <div key={c.topic} className="flex flex-col items-center gap-1.5">
-                <ProgressRing value={c.pct} tone={ringTone} size={44} stroke={4}>
-                  <span className="text-[9px] font-bold text-ink">{c.pct}%</span>
-                </ProgressRing>
-                <span className="rounded-md px-1.5 py-0.5 text-center text-[9px] font-semibold whitespace-nowrap text-ink-faint">
-                  {label}
-                </span>
-                <span className="text-[9px] text-ink-faint">{c.completedCount}/{c.moduleCount}</span>
-              </div>
-            );
-          })}
+      <div className="mb-7">
+        <p className="mb-3 text-[11px] font-semibold text-ink-faint">Progress by topic</p>
+        <div className="overflow-x-auto pb-1" aria-label="Progress by topic">
+          <div className="flex gap-4" style={{ minWidth: "max-content" }}>
+            {categoryBreakdown.filter((c) => c.moduleCount > 0).map((c) => {
+              const ringTone = c.pct === 100 ? "ok" : c.pct >= 50 ? "accent" : "warn";
+              const label = SHORT_LABEL[c.topic] ?? c.topic;
+              return (
+                <div key={c.topic} className="flex flex-col items-center gap-1.5">
+                  <ProgressRing value={c.pct} tone={ringTone} size={52} stroke={4.5}>
+                    <span className="text-[10px] font-bold text-ink">{c.pct}%</span>
+                  </ProgressRing>
+                  <span className="text-center text-[10px] font-medium whitespace-nowrap text-ink-faint">
+                    {label}
+                  </span>
+                  <span className="text-[10px] text-ink-faint">{c.completedCount}/{c.moduleCount}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -189,20 +192,16 @@ export default function CpdPage() {
           </div>
           <div className="flex flex-col gap-2">
             {upNext.map(({ mod, reason }, i) => {
-              const tc = { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
+              const tc = TOPIC_TOKEN[mod.topic] ?? { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
               return (
                 <div
                   key={mod.id}
                   className="flex items-start gap-3 rounded-xl border border-line p-4"
                   style={i === 0 ? { borderColor: "var(--accent-ink)", background: "var(--accent-soft)" } : {}}
                 >
-                  <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg"
-                    style={{ background: i === 0 ? "var(--accent-ink)" : "var(--surface-raised)" }}>
-                    <Zap className={`size-3.5 ${i === 0 ? "text-white" : "text-ink-faint"}`} aria-hidden="true" />
-                  </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-semibold text-ink">{mod.title}</p>
-                    <p className="mt-0.5 text-[11px] text-accent-ink">{reason}</p>
+                    <p className="mt-0.5 text-[11px] text-ink-soft">{reason}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span className="rounded-md px-2 py-0.5 text-[10px] font-semibold"
                         style={{ background: tc.bg, color: tc.color }}>{mod.topic}</span>
@@ -268,7 +267,7 @@ export default function CpdPage() {
         )}
 
         {query && searchResults.length > 0 && (
-          <Card className="mt-3 border-accent-ink/20">
+          <Card className="mt-3">
             <CardHeader>
               <CardTitle className="text-[13px]">
                 Results for &ldquo;{query}&rdquo;
@@ -285,7 +284,7 @@ export default function CpdPage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px] font-semibold text-ink">{r.title}</p>
-                      <p className="mt-0.5 text-[11px] text-accent-ink">{r.reason}</p>
+                      <p className="mt-0.5 text-[11px] text-ink-soft">{r.reason}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
                         <span className="rounded-md px-2 py-0.5 text-[10px] font-semibold"
                           style={{ background: tc.bg, color: tc.color }}>{r.topic}</span>
@@ -425,7 +424,7 @@ export default function CpdPage() {
                           <ul className="mb-3 flex flex-col gap-1">
                             {content.objectives.map((o, i) => (
                               <li key={i} className="flex items-start gap-2 text-[12px] text-ink-soft">
-                                <span className="mt-1.5 size-1 shrink-0 rounded-full bg-accent-ink" aria-hidden="true" />{o}
+                                <span className="mt-1.5 size-1 shrink-0 rounded-full bg-ink-faint" aria-hidden="true" />{o}
                               </li>
                             ))}
                           </ul>
