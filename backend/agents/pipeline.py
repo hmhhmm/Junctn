@@ -19,7 +19,7 @@ def _planner(state: BriefingState) -> BriefingState:
     trace_events = list(state.get("trace_events", []))
     trace_events.append({
         "agent": "planner",
-        "status": "thinking",
+        "status": "complete",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "summary": f"Analysing calendar, client memory, and follow-ups for {state['advisor_id']}",
     })
