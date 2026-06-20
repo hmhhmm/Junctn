@@ -203,7 +203,17 @@ export default function AdvisorDashboard() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [advisorId]);
 
-  const streamError = backendError || error ? "Briefing couldn't load" : null;
+  // If a restored job's stream errors (expired job, backend restart), clear it
+  // and generate a fresh briefing automatically.
+  useEffect(() => {
+    if (error) {
+      sessionStorage.removeItem(_sessionKey);
+      startBriefing(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
+
+  const streamError = backendError ? "Briefing couldn't load" : null;
 
   // ── Attention items ─────────────────────────────────────────────────────
   const attentionItems: AttentionItem[] = [
