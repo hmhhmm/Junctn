@@ -283,13 +283,6 @@ export default function AdvisorDashboard() {
         gap={topGap?.specialty ?? null}
       />
 
-      {/* ── Attention rail ──────────────────────────────────────────────── */}
-      {attentionItems.length > 0 && (
-        <div className="mt-1 mb-5">
-          <AttentionRail items={attentionItems} />
-        </div>
-      )}
-
       {/* ── Two-column body ─────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px]">
 
@@ -303,6 +296,9 @@ export default function AdvisorDashboard() {
 
         {/* Right rail */}
         <div className="flex flex-col gap-5">
+
+          {/* Attention rail */}
+          <AttentionRail items={attentionItems} />
 
           {/* Partner matches */}
           <Card id="partners">

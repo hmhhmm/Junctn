@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   Sparkles, ArrowRight, ListChecks, MessageSquare, X,
-  Calendar, Users, BookOpen, ChevronDown, ChevronUp,
+  Calendar, Users, ChevronDown, ChevronUp,
   CheckCircle2, Loader2, RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,27 +38,30 @@ function getDailyQuote() {
 // ── Section parsing ────────────────────────────────────────────────────────
 
 interface Section {
-  type: "CALENDAR" | "FOLLOWUPS" | "LD";
+  type: "CALENDAR" | "FOLLOWUPS";
   content: string;
 }
 
 const SECTION_META: Record<Section["type"], { label: string; Icon: React.ElementType; color: string; bg: string }> = {
-  CALENDAR:  { label: "Today's Calendar",      Icon: Calendar,  color: "#5eead4", bg: "rgba(15,118,110,0.15)" },
-  FOLLOWUPS: { label: "Follow-ups",             Icon: Users,     color: "#fbbf24", bg: "rgba(180,83,9,0.15)"  },
-  LD:        { label: "Learning & Development", Icon: BookOpen,  color: "#a78bfa", bg: "rgba(109,40,217,0.15)" },
+  CALENDAR:  { label: "Today's Calendar", Icon: Calendar, color: "#5eead4", bg: "rgba(15,118,110,0.15)" },
+  FOLLOWUPS: { label: "Follow-ups",       Icon: Users,    color: "#fbbf24", bg: "rgba(180,83,9,0.15)"  },
 };
 
 function parseSections(text: string): Section[] {
   const markers: Array<{ type: Section["type"]; index: number }> = [];
-  for (const type of ["CALENDAR", "FOLLOWUPS", "LD"] as Section["type"][]) {
+  for (const type of ["CALENDAR", "FOLLOWUPS"] as Section["type"][]) {
     const idx = text.indexOf(`[${type}]`);
     if (idx !== -1) markers.push({ type, index: idx });
   }
+  // Stop each section before either the next known marker or [LD] (excluded)
+  const ldIdx = text.indexOf("[LD]");
   markers.sort((a, b) => a.index - b.index);
 
   return markers.map((m, i) => {
     const start = m.index + `[${m.type}]`.length;
-    const end = markers[i + 1]?.index ?? text.length;
+    const nextMarker = markers[i + 1]?.index ?? text.length;
+    // Clip at [LD] if it appears before the next known marker
+    const end = ldIdx !== -1 && ldIdx < nextMarker ? ldIdx : nextMarker;
     return { type: m.type, content: text.slice(start, end).trim() };
   }).filter((s) => s.content.length > 0);
 }
