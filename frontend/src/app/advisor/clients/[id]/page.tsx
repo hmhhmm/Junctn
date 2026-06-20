@@ -15,6 +15,7 @@ import {
   ArrowRight,
   ShieldCheck,
   RefreshCw,
+  Bot,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { getClient, getPartner, getAdvisor, getNewsForClient } from "@/lib/data";
@@ -75,6 +76,7 @@ function ClientPageInner({
 }) {
   const [matches, setMatches] = useState<ApiPartnerMatch[]>([]);
   const [matchLoading, setMatchLoading] = useState(true);
+  const [showBot, setShowBot] = useState(true);
   const newsItems = getNewsForClient(client);
 
   useEffect(() => {
@@ -96,7 +98,7 @@ function ClientPageInner({
   }, [client.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="mx-auto max-w-[1100px] px-6 py-6">
+    <div className="mx-auto max-w-[1380px] px-6 py-6">
       <Link
         href="/advisor"
         className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-soft hover:text-ink"
@@ -125,12 +127,12 @@ function ClientPageInner({
             </div>
           </div>
         </div>
-        <div className="flex gap-6 text-right">
-          <div>
+        <div className="flex items-start gap-4">
+          <div className="text-right">
             <p className="text-[11px] uppercase tracking-wide text-ink-faint">AUM</p>
             <p className="font-display text-[20px] font-bold text-ink">{fmtAum}</p>
           </div>
-          <div>
+          <div className="text-right">
             <p className="text-[11px] uppercase tracking-wide text-ink-faint">Status</p>
             <p className="mt-1">
               <Badge variant={client.status === "review_due" ? "warn" : "ok"}>
@@ -138,10 +140,21 @@ function ClientPageInner({
               </Badge>
             </p>
           </div>
+          <button
+            onClick={() => setShowBot(v => !v)}
+            className="flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-colors"
+            style={showBot
+              ? { borderColor: "rgba(45,212,191,0.4)", background: "rgba(45,212,191,0.08)", color: "#2dd4bf" }
+              : { borderColor: "var(--line)", background: "var(--surface-raised)", color: "var(--ink-faint)" }
+            }
+          >
+            <Bot className="size-3.5" />
+            {showBot ? "Hide AI" : "AI Assistant"}
+          </button>
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_380px]">
+      <div className={`mt-5 grid grid-cols-1 gap-5 ${showBot ? "lg:grid-cols-[1fr_340px_270px]" : "lg:grid-cols-[1fr_340px]"}`}>
         {/* Left: timeline + referrals */}
         <div className="flex flex-col gap-5">
           {/* Needs */}
@@ -318,10 +331,14 @@ function ClientPageInner({
             </CardContent>
           </Card>
         </div>
-      </div>
 
-      {/* Floating AI advisor bot */}
-      <ClientAdvisorBot client={client} />
+        {/* AI sidebar — 3rd column */}
+        {showBot && (
+          <div className="hidden lg:flex lg:flex-col" style={{ height: "calc(100vh - 180px)", position: "sticky", top: "80px" }}>
+            <ClientAdvisorBot client={client} onClose={() => setShowBot(false)} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
