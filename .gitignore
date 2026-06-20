@@ -16,6 +16,11 @@
 # production
 /build
 
+# Python bytecode
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
 # misc
 .DS_Store
 *.pem
