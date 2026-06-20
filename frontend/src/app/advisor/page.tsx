@@ -279,7 +279,7 @@ export default function AdvisorDashboard() {
         tokens={tokens}
         isStreaming={!!jobId && !isDone}
         error={streamError}
-        fallbackText={brief.briefingText}
+
         token={accessToken ?? undefined}
         advisorId={advisorId}
         traceEvents={traceEvents}
