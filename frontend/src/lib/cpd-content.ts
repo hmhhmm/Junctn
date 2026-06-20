@@ -90,14 +90,14 @@ export const MODULE_CONTENT: Record<string, ModuleContent> = {
         body: [
           "A will is suitable for most clients — it is cost-effective, straightforward, and provides flexibility. However, a trust becomes the better solution in several scenarios: minor beneficiaries who cannot manage assets directly; beneficiaries with disabilities; clients concerned about a beneficiary's spending habits; and situations where the estate includes assets in multiple jurisdictions.",
           "Cross-border estates present particular challenges. A Singapore will has no automatic legal effect overseas — clients with assets in the UK, Australia, or the US will typically need ancillary wills or trust structures in those jurisdictions. For clients with significant overseas holdings, refer to a specialist with cross-border estate planning experience.",
-          "The cost-benefit decision: A simple discretionary trust established during a client's lifetime (inter vivos trust) typically costs S$5,000–S$20,000 to set up, plus annual trustee fees. For estates above S$2M, this cost is often justified by the benefits: privacy (trusts are not public record), certainty of distribution, and continuity of management.",
+          "The cost-benefit decision: A simple discretionary trust established during a client's lifetime (inter vivos trust) typically costs RM5,000–RM20,000 to set up, plus annual trustee fees. For estates above RM2M, this cost is often justified by the benefits: privacy (trusts are not public record), certainty of distribution, and continuity of management.",
         ],
       },
     ],
     quiz: [
       { q: "Which type of trust allows the settlor to dissolve it during their lifetime?", options: ["Fixed interest trust", "Revocable trust", "Irrevocable trust", "Purpose trust"], answer: 1 },
       { q: "Assets with valid CPF or insurance nominations:", options: ["Go through probate first", "Bypass probate entirely", "Must be declared in the will", "Are frozen for 6 months"], answer: 1 },
-      { q: "A Private Trust Company (PTC) in Singapore requires a Trust Company licence when:", options: ["Managing assets above S$5M", "Administering trusts for unrelated parties", "Holding overseas assets", "Managing a discretionary trust"], answer: 1 },
+      { q: "A Private Trust Company (PTC) in Singapore requires a Trust Company licence when:", options: ["Managing assets above RM5M", "Administering trusts for unrelated parties", "Holding overseas assets", "Managing a discretionary trust"], answer: 1 },
     ],
   },
 
@@ -114,14 +114,14 @@ export const MODULE_CONTENT: Record<string, ModuleContent> = {
         title: "Singapore Tax System Overview",
         body: [
           "Singapore operates a territorial tax system — individuals and companies are taxed only on income sourced in Singapore, or foreign income remitted to Singapore. This makes Singapore an attractive base for internationally mobile clients, but requires careful planning when income crosses borders.",
-          "For Year of Assessment 2027 (income earned in 2026), the top marginal personal income tax rate remains at 24% for chargeable income above S$1,000,000. The corporate tax rate is a flat 17%, though effective rates are often lower due to partial tax exemptions and startup exemptions.",
-          "Key exemptions for individuals: the personal relief of S$1,000, earned income relief, and the Working Mother's Child Relief (WMCR) are the most commonly applicable. For clients with significant investment income, advising on optimising their relief mix can meaningfully reduce their tax bill.",
+          "For Year of Assessment 2027 (income earned in 2026), the top marginal personal income tax rate remains at 24% for chargeable income above RM1,000,000. The corporate tax rate is a flat 17%, though effective rates are often lower due to partial tax exemptions and startup exemptions.",
+          "Key exemptions for individuals: the personal relief of RM1,000, earned income relief, and the Working Mother's Child Relief (WMCR) are the most commonly applicable. For clients with significant investment income, advising on optimising their relief mix can meaningfully reduce their tax bill.",
         ],
       },
       {
         title: "2026 Budget Changes and Client Impact",
         body: [
-          "The 2026 Budget introduced several changes relevant to your client conversations. The GST rate has been raised to 9% (effective from 1 January 2024 and unchanged in 2026). Importantly, the GST Voucher — CASH component was increased to S$850 for eligible recipients.",
+          "The 2026 Budget introduced several changes relevant to your client conversations. The GST rate has been raised to 9% (effective from 1 January 2024 and unchanged in 2026). Importantly, the GST Voucher — CASH component was increased to RM850 for eligible recipients.",
           "For property-owning clients: the Additional Conveyance Duties (ACD) regime for property-holding entities was strengthened. Advise clients with complex shareholding structures in property companies to review their positions with a tax specialist.",
           "The Equities Market Revitalisation Package introduced in Budget 2025 continues to benefit clients invested in Singapore-listed securities, with enhanced tax incentives for funds managed in Singapore. This is particularly relevant for HNW clients whose portfolios include PE or hedge fund structures domiciled locally.",
           "RSU and ESOP taxation: For clients receiving equity compensation, the open market value on the vesting date is taxable as employment income. The key planning opportunity is timing — clients who anticipate a significant salary reduction (e.g., retiring, taking sabbatical) in the next 1–2 years should consider requesting accelerated vesting when possible.",
@@ -132,7 +132,7 @@ export const MODULE_CONTENT: Record<string, ModuleContent> = {
         body: [
           "For business-owner clients, the choice between drawing a salary versus dividends from their company has tax implications. Salaries are deductible at the corporate level (reducing corporate tax) but taxable at the individual level. Dividends are paid from after-tax profits and are tax-exempt in the hands of shareholders under the one-tier tax system.",
           "The practical recommendation: business owners in the 22–24% personal tax bracket generally benefit from drawing a salary sufficient to maximise CPF contributions (relevant for those under 55) and supplementing with dividends. This balances personal tax efficiency with retirement savings.",
-          "Family offices: Singapore's enhanced fund framework (13O and 13U schemes) remain attractive for families with investable assets above S$10M. Both schemes provide full tax exemptions on qualifying income. The minimum AUM for 13O is S$10M (increasing to S$20M after 2 years), and for 13U is S$50M.",
+          "Family offices: Singapore's enhanced fund framework (13O and 13U schemes) remain attractive for families with investable assets above RM10M. Both schemes provide full tax exemptions on qualifying income. The minimum AUM for 13O is RM10M (increasing to RM20M after 2 years), and for 13U is RM50M.",
         ],
       },
       {
@@ -146,7 +146,7 @@ export const MODULE_CONTENT: Record<string, ModuleContent> = {
     ],
     quiz: [
       { q: "Singapore's corporate income tax rate (flat) is:", options: ["15%", "17%", "20%", "22%"], answer: 1 },
-      { q: "Foreign-sourced income is tax-exempt in Singapore when:", options: ["It is below S$100,000", "It has been taxed in the source country at headline rate ≥ 15%", "The recipient is a Singapore citizen", "It is not remitted to Singapore in the same year"], answer: 1 },
+      { q: "Foreign-sourced income is tax-exempt in Singapore when:", options: ["It is below RM100,000", "It has been taxed in the source country at headline rate ≥ 15%", "The recipient is a Singapore citizen", "It is not remitted to Singapore in the same year"], answer: 1 },
       { q: "RSU income is taxable in Singapore at:", options: ["Grant date", "Vesting date", "Exercise date", "Sale date"], answer: 1 },
     ],
   },
@@ -260,15 +260,15 @@ export const MODULE_CONTENT: Record<string, ModuleContent> = {
       {
         title: "CPF Retirement Sums and LIFE Payouts",
         body: [
-          "The CPF system requires members reaching 55 to set aside a Retirement Sum in their Retirement Account (RA), formed by transferring from OA and SA. Three levels: Basic Retirement Sum (BRS) provides S$900–S$1,100/month from age 65; Full Retirement Sum (FRS) provides S$1,650–S$2,000/month; Enhanced Retirement Sum (ERS) provides S$2,200–S$2,600/month. The ERS was raised to 4x BRS in 2025 to allow clients with higher income needs to contribute more.",
+          "The CPF system requires members reaching 55 to set aside a Retirement Sum in their Retirement Account (RA), formed by transferring from OA and SA. Three levels: Basic Retirement Sum (BRS) provides RM900–RM1,100/month from age 65; Full Retirement Sum (FRS) provides RM1,650–RM2,000/month; Enhanced Retirement Sum (ERS) provides RM2,200–RM2,600/month. The ERS was raised to 4x BRS in 2025 to allow clients with higher income needs to contribute more.",
           "CPF LIFE (Lifelong Income For the Elderly) converts the RA balance into a monthly payout for life. Standard Plan (higher payouts, lower bequest) vs Basic Plan (lower payouts, higher bequest) — advise clients based on their health status, whether they have dependants, and their attitude toward bequest motives.",
-          "Top-up strategies: the Retirement Sum Topping-Up Scheme (RSTU) allows clients to top up their own RA or a family member's SA/RA up to the current ERS. Cash top-ups attract a tax relief of up to S$8,000 per year (own account) plus S$8,000 for family members. For clients in the 22% marginal tax bracket, a S$16,000 top-up generates S$3,520 in immediate tax savings — before the investment return.",
+          "Top-up strategies: the Retirement Sum Topping-Up Scheme (RSTU) allows clients to top up their own RA or a family member's SA/RA up to the current ERS. Cash top-ups attract a tax relief of up to RM8,000 per year (own account) plus RM8,000 for family members. For clients in the 22% marginal tax bracket, a RM16,000 top-up generates RM3,520 in immediate tax savings — before the investment return.",
         ],
       },
       {
         title: "SRS: Tax Deferral for High Earners",
         body: [
-          "The Supplementary Retirement Scheme (SRS) is a voluntary savings scheme with significant tax advantages. Singapore citizens and PRs may contribute up to S$15,300/year; foreigners up to S$35,700/year. Contributions are fully tax-deductible in the year of contribution.",
+          "The Supplementary Retirement Scheme (SRS) is a voluntary savings scheme with significant tax advantages. Singapore citizens and PRs may contribute up to RM15,300/year; foreigners up to RM35,700/year. Contributions are fully tax-deductible in the year of contribution.",
           "The SRS withdrawal advantage: withdrawals from age 62 (the SRS retirement age) attract only 50% inclusion for tax purposes. Spreading withdrawals over 10 years after the statutory retirement age can result in very little or no tax paid on accumulated SRS balances — particularly powerful for clients whose taxable income will be lower in retirement.",
           "SRS investment strategy: unlike CPF OA and SA which are invested by the board at 2.5% and 4% respectively, SRS funds must be actively invested by the account holder. Default SRS balances earn only 0.05% per year. Help clients build a diversified portfolio within SRS using unit trusts, ETFs, Singapore equities, or REITs. The long investment horizon of 15–30+ years makes equity allocation within SRS highly appropriate.",
         ],
@@ -278,7 +278,7 @@ export const MODULE_CONTENT: Record<string, ModuleContent> = {
         body: [
           "The classic drawdown framework is the 4% Rule: withdraw 4% of the portfolio in Year 1 of retirement, adjusting for inflation annually. Based on US market data, this rule has a ~90% success rate over 30-year retirements. However, for longer retirements (35+ years) or more conservative portfolios, a 3–3.5% initial withdrawal rate is more robust.",
           "For Singapore clients, a bucket strategy may be more intuitive: Bucket 1 (1–2 years of living expenses in cash/T-bills — immediate liquidity), Bucket 2 (3–7 years of expenses in bonds and balanced funds — stability), Bucket 3 (remaining assets in equities — long-term growth). Refill Bucket 1 annually from Bucket 2, and Bucket 2 from Bucket 3 when markets are favourable.",
-          "Healthcare planning is the most underestimated retirement expense. Integrate Shield plan reviews into every retirement planning conversation — a H&S plan with integrated rider can cap annual out-of-pocket expenses to as low as S$3,000 for hospitalisation. Without adequate coverage, a single healthcare event can derail an otherwise well-structured retirement plan.",
+          "Healthcare planning is the most underestimated retirement expense. Integrate Shield plan reviews into every retirement planning conversation — a H&S plan with integrated rider can cap annual out-of-pocket expenses to as low as RM3,000 for hospitalisation. Without adequate coverage, a single healthcare event can derail an otherwise well-structured retirement plan.",
         ],
       },
     ],
@@ -327,14 +327,14 @@ export const MODULE_CONTENT: Record<string, ModuleContent> = {
           "Every complaint must be handled promptly and fairly. MAS expects complaints to be acknowledged within 2 business days and substantively responded to within 14 business days. Complex complaints may take longer, but the client must be kept informed of progress.",
           "A complaint is any expression of dissatisfaction — written or oral. You cannot decide that a client's concern is 'not really a complaint' and handle it informally. All complaints must be logged in the firm's complaints register, even if resolved at the first point of contact.",
           "Escalation protocol: if you receive a complaint, immediately inform your supervisor and compliance team. Do not attempt to resolve it independently, particularly if there is any possibility of a regulatory breach being involved. The firm's complaints handling policy takes precedence over your individual judgment.",
-          "FIDReC (Financial Industry Disputes Resolution Centre): if a complaint cannot be resolved internally, clients may escalate to FIDReC for independent mediation and adjudication. FIDReC can award compensation up to S$150,000 per claim. Awareness of this avenue is important — informing clients of their right to escalate is itself a fair dealing obligation.",
+          "FIDReC (Financial Industry Disputes Resolution Centre): if a complaint cannot be resolved internally, clients may escalate to FIDReC for independent mediation and adjudication. FIDReC can award compensation up to RM150,000 per claim. Awareness of this avenue is important — informing clients of their right to escalate is itself a fair dealing obligation.",
         ],
       },
     ],
     quiz: [
       { q: "MAS Fair Dealing guidelines specify how many intended outcomes?", options: ["3", "4", "5", "6"], answer: 2 },
       { q: "A Customer Knowledge Assessment (CKA) is required when recommending:", options: ["Life insurance policies", "Specified Investment Products (SIPs)", "CPF top-ups", "Health and Shield plans"], answer: 1 },
-      { q: "FIDReC can award compensation per claim up to:", options: ["S$50,000", "S$100,000", "S$150,000", "S$250,000"], answer: 2 },
+      { q: "FIDReC can award compensation per claim up to:", options: ["RM50,000", "RM100,000", "RM150,000", "RM250,000"], answer: 2 },
     ],
   },
 };
