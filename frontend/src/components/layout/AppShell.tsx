@@ -7,7 +7,7 @@ import { Toaster } from "./Toaster";
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <StoreProvider>
-      <div className="flex h-screen flex-col overflow-hidden">
+      <div id="app-layout" className="flex h-screen flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>

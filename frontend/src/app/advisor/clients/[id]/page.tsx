@@ -15,7 +15,6 @@ import {
   ArrowRight,
   ShieldCheck,
   RefreshCw,
-  Bot,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { getClient, getPartner, getAdvisor, getNewsForClient } from "@/lib/data";
@@ -60,7 +59,6 @@ export default function ClientPage({ params }: { params: { id: string } }) {
   );
 }
 
-// Inner component so we can use hooks freely (notFound() must be called before hooks)
 function ClientPageInner({
   client,
   advisor,
@@ -76,11 +74,18 @@ function ClientPageInner({
 }) {
   const [matches, setMatches] = useState<ApiPartnerMatch[]>([]);
   const [matchLoading, setMatchLoading] = useState(true);
-  const [showBot, setShowBot] = useState(true);
+  const [botOpen, setBotOpen] = useState(false);
   const newsItems = getNewsForClient(client);
 
   useEffect(() => {
-    // Build a rich query from client needs + note summaries
+    const shell = document.getElementById("app-layout") as HTMLElement | null;
+    if (!shell) return;
+    shell.style.transition = "padding-right 300ms cubic-bezier(.22,.68,0,1.15)";
+    shell.style.paddingRight = botOpen ? "340px" : "0";
+    return () => { shell.style.paddingRight = ""; shell.style.transition = ""; };
+  }, [botOpen]);
+
+  useEffect(() => {
     const query = [
       ...client.needs,
       ...client.notes.map((n) => n.summary),
@@ -98,7 +103,7 @@ function ClientPageInner({
   }, [client.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="mx-auto max-w-[1380px] px-6 py-6">
+    <div className="mx-auto max-w-[1100px] px-6 py-6">
       <Link
         href="/advisor"
         className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-soft hover:text-ink"
@@ -120,19 +125,17 @@ function ClientPageInner({
             </p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {client.tags.map((t) => (
-                <Badge key={t} variant="neutral">
-                  {t}
-                </Badge>
+                <Badge key={t} variant="neutral">{t}</Badge>
               ))}
             </div>
           </div>
         </div>
-        <div className="flex items-start gap-4">
-          <div className="text-right">
+        <div className="flex gap-6 text-right">
+          <div>
             <p className="text-[11px] uppercase tracking-wide text-ink-faint">AUM</p>
             <p className="font-display text-[20px] font-bold text-ink">{fmtAum}</p>
           </div>
-          <div className="text-right">
+          <div>
             <p className="text-[11px] uppercase tracking-wide text-ink-faint">Status</p>
             <p className="mt-1">
               <Badge variant={client.status === "review_due" ? "warn" : "ok"}>
@@ -140,38 +143,23 @@ function ClientPageInner({
               </Badge>
             </p>
           </div>
-          <button
-            onClick={() => setShowBot(v => !v)}
-            className="flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-colors"
-            style={showBot
-              ? { borderColor: "rgba(45,212,191,0.4)", background: "rgba(45,212,191,0.08)", color: "#2dd4bf" }
-              : { borderColor: "var(--line)", background: "var(--surface-raised)", color: "var(--ink-faint)" }
-            }
-          >
-            <Bot className="size-3.5" />
-            {showBot ? "Hide AI" : "AI Assistant"}
-          </button>
         </div>
       </div>
 
-      <div className={`mt-5 grid grid-cols-1 gap-5 ${showBot ? "lg:grid-cols-[1fr_340px_270px]" : "lg:grid-cols-[1fr_340px]"}`}>
-        {/* Left: timeline + referrals */}
+      <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_380px]">
+        {/* Left: needs + timeline + referrals */}
         <div className="flex flex-col gap-5">
-          {/* Needs */}
           <Card>
             <CardHeader>
               <CardTitle>Needs &amp; objectives</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-1.5 pt-0">
               {client.needs.map((n) => (
-                <Badge key={n} variant="accent">
-                  {n}
-                </Badge>
+                <Badge key={n} variant="accent">{n}</Badge>
               ))}
             </CardContent>
           </Card>
 
-          {/* Contact history */}
           <Card>
             <CardHeader>
               <CardTitle>Contact history</CardTitle>
@@ -205,7 +193,6 @@ function ClientPageInner({
             </CardContent>
           </Card>
 
-          {/* Referrals for this client */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5">
@@ -220,10 +207,7 @@ function ClientPageInner({
               {openReferrals.map((r) => {
                 const partner = getPartner(r.partnerId)!;
                 return (
-                  <div
-                    key={r.id}
-                    className="flex items-center gap-3 rounded-md border border-line p-3"
-                  >
+                  <div key={r.id} className="flex items-center gap-3 rounded-md border border-line p-3">
                     <Avatar initials={partner.initials} size="sm" />
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px] font-medium text-ink">{partner.name}</p>
@@ -237,7 +221,7 @@ function ClientPageInner({
           </Card>
         </div>
 
-        {/* Right: relationship intelligence + AI memory + partner matches */}
+        {/* Right: relationship intelligence */}
         <div className="flex flex-col gap-5">
           <RelationshipCard client={client} />
 
@@ -276,7 +260,6 @@ function ClientPageInner({
             </CardContent>
           </Card>
 
-          {/* Live AI partner matches from ChromaDB */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5">
@@ -331,14 +314,10 @@ function ClientPageInner({
             </CardContent>
           </Card>
         </div>
-
-        {/* AI sidebar — 3rd column */}
-        {showBot && (
-          <div className="hidden lg:flex lg:flex-col" style={{ height: "calc(100vh - 180px)", position: "sticky", top: "80px" }}>
-            <ClientAdvisorBot client={client} onClose={() => setShowBot(false)} />
-          </div>
-        )}
       </div>
+
+      {/* Fixed full-height sidebar */}
+      <ClientAdvisorBot client={client} open={botOpen} onToggle={() => setBotOpen(v => !v)} />
     </div>
   );
 }
