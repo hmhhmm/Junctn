@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   MessageSquareWarning,
-  Sparkles,
+  Network,
   FileWarning,
   CheckCircle2,
   ChevronRight,
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 const flagStyles = {
   followup: { icon: MessageSquareWarning, cls: "bg-alert-soft text-alert" },
-  match: { icon: Sparkles, cls: "bg-accent-soft text-accent-ink" },
+  match: { icon: Network, cls: "bg-surface-raised text-ink-soft" },
   missing: { icon: FileWarning, cls: "bg-warn-soft text-warn" },
   logged: { icon: CheckCircle2, cls: "bg-ok-soft text-ok" },
 } as const;

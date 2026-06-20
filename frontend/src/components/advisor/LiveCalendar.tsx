@@ -12,7 +12,7 @@ import {
   CalendarDays,
   CheckCircle2,
   MessageSquareWarning,
-  Sparkles,
+  Network,
   FileWarning,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -35,7 +35,7 @@ interface CalendarEvent {
 
 const mockFlagStyles = {
   followup: { icon: MessageSquareWarning, cls: "bg-alert-soft text-alert" },
-  match: { icon: Sparkles, cls: "bg-accent-soft text-accent-ink" },
+  match: { icon: Network, cls: "bg-surface-raised text-ink-soft" },
   missing: { icon: FileWarning, cls: "bg-warn-soft text-warn" },
   logged: { icon: CheckCircle2, cls: "bg-ok-soft text-ok" },
 } as const;

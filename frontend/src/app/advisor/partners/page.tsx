@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight, RefreshCw } from "lucide-react";
+import { ArrowRight, RefreshCw } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { partners, getClientsByAdvisor, SPECIALTIES, REGIONS } from "@/lib/data";
 import { Avatar } from "@/components/ui/avatar";
@@ -63,8 +63,7 @@ export default function PartnersPage() {
 
       {/* ── AI Recommended ────────────────────────────────────────── */}
       <section className="mb-10">
-        <div className="mb-4 flex items-center gap-2">
-          <Sparkles className="size-4 text-accent-ink" />
+        <div className="mb-4">
           <h2 className="text-[14px] font-semibold text-ink">Recommended for your clients</h2>
         </div>
 

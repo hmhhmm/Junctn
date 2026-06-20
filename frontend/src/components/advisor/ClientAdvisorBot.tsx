@@ -129,8 +129,8 @@ export function ClientAdvisorBot({ client, open, onToggle }: Props) {
           className="flex shrink-0 items-center gap-3 px-4 py-3.5 border-b border-line"
           style={{ background: "linear-gradient(135deg,#0d1b2a,#0f2233)" }}
         >
-          <div className="flex size-8 items-center justify-center rounded-xl" style={{ background: "rgba(45,212,191,0.15)" }}>
-            <Sparkles className="size-4 text-teal-400" />
+          <div className="flex size-8 items-center justify-center rounded-xl" style={{ background: "rgba(255,255,255,0.08)" }}>
+            <Bot className="size-4 text-white/60" />
           </div>
           <div className="flex-1">
             <p className="text-[13px] font-semibold text-white">Advisor AI</p>
@@ -155,8 +155,8 @@ export function ClientAdvisorBot({ client, open, onToggle }: Props) {
                     onClick={() => send(qa.prompt)}
                     className="flex items-center gap-2.5 rounded-xl border border-line p-3 text-left transition-colors hover:bg-surface-raised"
                   >
-                    <span className="flex size-7 shrink-0 items-center justify-center rounded-xl" style={{ background: "rgba(45,212,191,0.1)" }}>
-                      <qa.icon className="size-3.5 text-teal-400" />
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-xl" style={{ background: "var(--surface-raised)" }}>
+                      <qa.icon className="size-3.5 text-ink-soft" />
                     </span>
                     <span className="flex-1 text-[12px] font-medium text-ink">{qa.label}</span>
                     <ChevronRight className="size-3.5 text-ink-faint" />
@@ -176,8 +176,8 @@ export function ClientAdvisorBot({ client, open, onToggle }: Props) {
           {msgs.map((m, i) => (
             <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               {m.role === "assistant" && (
-                <div className="mr-2 mt-1 flex size-5 shrink-0 items-center justify-center rounded-full" style={{ background: "rgba(45,212,191,0.12)" }}>
-                  <Sparkles className="size-2.5 text-teal-400" />
+                <div className="mr-2 mt-1 flex size-5 shrink-0 items-center justify-center rounded-full" style={{ background: "var(--surface-raised)" }}>
+                  <Bot className="size-2.5 text-ink-faint" />
                 </div>
               )}
               <div
@@ -194,8 +194,8 @@ export function ClientAdvisorBot({ client, open, onToggle }: Props) {
 
           {loading && (
             <div className="flex items-center gap-2">
-              <div className="flex size-5 items-center justify-center rounded-full" style={{ background: "rgba(45,212,191,0.12)" }}>
-                <Sparkles className="size-2.5 text-teal-400" />
+              <div className="flex size-5 items-center justify-center rounded-full" style={{ background: "var(--surface-raised)" }}>
+                <Bot className="size-2.5 text-ink-faint" />
               </div>
               <div className="flex gap-1 rounded-2xl px-3 py-2" style={{ background: "var(--surface-raised)" }}>
                 {[0, 1, 2].map(i => (

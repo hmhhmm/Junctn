@@ -180,8 +180,8 @@ function ClientPageInner({
                         <span className="text-[12px] font-semibold text-ink">{note.channel}</span>
                         <span className="text-[11px] text-ink-faint">{note.date}</span>
                         {note.source && (
-                          <Badge variant="accent" className="ml-auto">
-                            <Sparkles className="size-2.5" /> memory source
+                          <Badge variant="neutral" className="ml-auto">
+                            {note.source}
                           </Badge>
                         )}
                       </div>
@@ -227,10 +227,9 @@ function ClientPageInner({
 
           <EvidenceRail items={newsItems} clientName={client.name} />
 
-          <Card className="border-accent/30">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5">
-                <Sparkles className="size-4 text-accent-ink" />
                 Client memory
               </CardTitle>
             </CardHeader>
@@ -265,12 +264,6 @@ function ClientPageInner({
               <CardTitle className="flex items-center gap-1.5">
                 <Network className="size-4 text-ink-soft" />
                 Suggested partners
-                {!matchLoading && (
-                  <span className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium"
-                        style={{ background: "var(--ok-soft)", color: "var(--ok)" }}>
-                    <Sparkles className="size-2.5" /> AI matched
-                  </span>
-                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 pt-0">

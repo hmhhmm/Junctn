@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldCheck, Lock, Sparkles, Mail } from "lucide-react";
+import { ShieldCheck, Lock, Mail } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
@@ -71,9 +71,8 @@ Best regards`,
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <span className="mb-1 inline-flex w-fit items-center gap-1.5 rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-medium text-accent-ink">
-            <Sparkles className="size-3" />
-            AI-matched introduction
+          <span className="mb-1 inline-block text-[11px] font-medium text-ink-faint">
+            Partner introduction
           </span>
           <DialogTitle>Draft referral email</DialogTitle>
           <DialogDescription>

@@ -1,6 +1,6 @@
 "use client";
 
-import { GraduationCap, Sparkles, Clock, ArrowRight } from "lucide-react";
+import { GraduationCap, Clock, ArrowRight } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ProgressRing } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -45,9 +45,8 @@ export function CpdCard({ advisorId }: { advisorId: string }) {
 
         {cpd.recommendedModule && (
           <div className="mt-4 rounded-md border border-line p-3">
-            <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-accent-ink">
-              <Sparkles className="size-3" />
-              Recommended — your most common client need is {cpd.topNeed}
+            <p className="mb-1.5 text-[11px] font-medium text-ink-faint">
+              Recommended for {cpd.topNeed}
             </p>
             <p className="text-[13px] font-semibold text-ink">{cpd.recommendedModule.title}</p>
             <p className="mt-1 flex items-center gap-3 text-[11px] text-ink-faint">

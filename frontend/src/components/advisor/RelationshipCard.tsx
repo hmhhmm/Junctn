@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  Heart, Gift, Calendar, MessageCircle, Users, Sparkles, X, Mail, RefreshCw,
+  Heart, Gift, Calendar, MessageCircle, Users, X, Mail, RefreshCw,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -85,7 +85,7 @@ function PersonalTouchDialog({ client, onClose }: TouchDialogProps) {
         <button onClick={onClose} className="absolute right-4 top-4 text-ink-faint hover:text-ink">
           <X className="size-4" />
         </button>
-        <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-ink-faint">Personal touch</p>
+        <p className="mb-1 text-[11px] font-medium text-ink-faint">Personal touch</p>
         <h3 className="mb-1 font-display text-[16px] font-bold text-ink">{client.name}</h3>
         {profile?.communicationStyle && (
           <p className="mb-3 text-[12px] text-ink-faint">Style: {profile.communicationStyle}</p>
@@ -97,7 +97,7 @@ function PersonalTouchDialog({ client, onClose }: TouchDialogProps) {
             disabled={aiLoading}
             className="mb-3 flex items-center gap-1.5 rounded-lg border border-accent/30 px-3 py-1.5 text-[11px] font-medium text-accent-ink transition-colors hover:bg-accent-soft disabled:opacity-50"
           >
-            {aiLoading ? <RefreshCw className="size-3 animate-spin" /> : <Sparkles className="size-3" />}
+            {aiLoading && <RefreshCw className="size-3 animate-spin" />}
             {aiLoading ? "Generating personalised message…" : "Generate AI message"}
           </button>
         )}
@@ -114,8 +114,8 @@ function PersonalTouchDialog({ client, onClose }: TouchDialogProps) {
                 : { borderColor: "var(--line)", background: "var(--surface-raised)", color: "var(--ink-soft)" }}
             >
               {i === 0 && aiDraft && (
-                <span className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-accent-ink">
-                  <Sparkles className="size-2.5" /> AI personalised
+                <span className="mb-1 block text-[10px] font-semibold text-accent-ink">
+                  Personalised
                 </span>
               )}
               {s}
@@ -155,7 +155,7 @@ export function RelationshipCard({ client }: Props) {
         <PersonalTouchDialog client={client} onClose={() => setShowTouchDialog(false)} />
       )}
 
-      <Card className="border-accent/20">
+      <Card>
         <CardHeader className="flex items-center justify-between pb-3">
           <CardTitle className="flex items-center gap-1.5">
             <Heart className="size-4 text-rose-400" />
@@ -170,15 +170,14 @@ export function RelationshipCard({ client }: Props) {
           {/* Interests */}
           {profile.interests.length > 0 && (
             <div>
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
-                <Sparkles className="size-3 text-accent-ink" /> Interests
+              <p className="mb-1.5 text-[11px] font-semibold text-ink-faint">
+                Interests
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {profile.interests.map((interest) => (
                   <span
                     key={interest}
-                    className="rounded-full px-2.5 py-0.5 text-[11px] font-medium"
-                    style={{ background: "rgba(45,212,191,0.1)", color: "#2dd4bf" }}
+                    className="rounded-full border border-line px-2.5 py-0.5 text-[11px] text-ink-soft"
                   >
                     {interest}
                   </span>
@@ -190,8 +189,8 @@ export function RelationshipCard({ client }: Props) {
           {/* Family */}
           {profile.family.length > 0 && (
             <div>
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
-                <Users className="size-3" /> Family
+              <p className="mb-1.5 text-[11px] font-semibold text-ink-faint">
+                Family
               </p>
               <ul className="flex flex-col gap-0.5">
                 {profile.family.map((member, i) => (
@@ -204,7 +203,7 @@ export function RelationshipCard({ client }: Props) {
           {/* Upcoming dates */}
           {upcomingDates.length > 0 && (
             <div>
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-ink-faint">
                 <Calendar className="size-3" /> Upcoming dates
               </p>
               <ul className="flex flex-col gap-1">
@@ -228,7 +227,7 @@ export function RelationshipCard({ client }: Props) {
           {/* Communication style */}
           {profile.communicationStyle && (
             <div>
-              <p className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+              <p className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-ink-faint">
                 <MessageCircle className="size-3" /> Communication style
               </p>
               <p className="text-[12px] text-ink-soft">{profile.communicationStyle}</p>
@@ -238,7 +237,7 @@ export function RelationshipCard({ client }: Props) {
           {/* Gift ideas */}
           {profile.giftIdeas.length > 0 && (
             <div>
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-ink-faint">
                 <Gift className="size-3" /> Gift ideas
               </p>
               <ul className="flex flex-col gap-0.5">

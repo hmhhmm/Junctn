@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Network, MessageSquareWarning, FileWarning, ShieldCheck,
-  ChevronRight, Sparkles, ArrowRight,
+  ChevronRight, ArrowRight,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { getMorningBriefing, getCriticalGaps, getClient } from "@/lib/data";
@@ -279,14 +279,6 @@ export default function AdvisorDashboard() {
               <CardTitle className="flex items-center gap-1.5">
                 <Network className="size-4 text-ink-soft" aria-hidden="true" />
                 Partner matches
-                {!matchLoading && (
-                  <span
-                    className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium"
-                    style={{ background: "var(--ok-soft)", color: "var(--ok)" }}
-                  >
-                    <Sparkles className="size-2.5" aria-hidden="true" /> AI
-                  </span>
-                )}
               </CardTitle>
               {!matchLoading && (
                 <span className="text-[11px] text-ink-faint">{matches.length} ready</span>
@@ -314,8 +306,7 @@ export default function AdvisorDashboard() {
                   const matchClient = getMatchClient();
                   return (
                     <div key={m.id} className="rounded-lg border border-line p-3.5">
-                      <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-medium text-accent-ink">
-                        <Sparkles className="size-3" aria-hidden="true" />
+                      <p className="mb-2.5 text-[11px] font-medium text-ink-faint">
                         {m.reason}
                       </p>
                       <div className="flex items-center gap-2.5">

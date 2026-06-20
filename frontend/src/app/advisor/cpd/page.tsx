@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   Clock, CheckCircle2, BookOpen, AlertTriangle, Search,
-  Sparkles, RefreshCw, GraduationCap, ArrowRight,
+  RefreshCw, GraduationCap, ArrowRight,
   ChevronDown, Play, Zap, PartyPopper,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -155,7 +155,6 @@ export default function CpdPage() {
       <div className="mb-7 overflow-x-auto pb-1" aria-label="Progress by topic">
         <div className="flex gap-3" style={{ minWidth: "max-content" }}>
           {categoryBreakdown.filter((c) => c.moduleCount > 0).map((c) => {
-            const tc = TOPIC_TOKEN[c.topic] ?? { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
             const ringTone = c.pct === 100 ? "ok" : c.pct >= 50 ? "accent" : "warn";
             const label = SHORT_LABEL[c.topic] ?? c.topic;
             return (
@@ -163,10 +162,7 @@ export default function CpdPage() {
                 <ProgressRing value={c.pct} tone={ringTone} size={44} stroke={4}>
                   <span className="text-[9px] font-bold text-ink">{c.pct}%</span>
                 </ProgressRing>
-                <span
-                  className="rounded-md px-1.5 py-0.5 text-center text-[9px] font-semibold whitespace-nowrap"
-                  style={{ background: tc.bg, color: tc.color }}
-                >
+                <span className="rounded-md px-1.5 py-0.5 text-center text-[9px] font-semibold whitespace-nowrap text-ink-faint">
                   {label}
                 </span>
                 <span className="text-[9px] text-ink-faint">{c.completedCount}/{c.moduleCount}</span>
@@ -193,7 +189,7 @@ export default function CpdPage() {
           </div>
           <div className="flex flex-col gap-2">
             {upNext.map(({ mod, reason }, i) => {
-              const tc = TOPIC_TOKEN[mod.topic] ?? { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
+              const tc = { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
               return (
                 <div
                   key={mod.id}
@@ -202,9 +198,7 @@ export default function CpdPage() {
                 >
                   <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg"
                     style={{ background: i === 0 ? "var(--accent-ink)" : "var(--surface-raised)" }}>
-                    {i === 0
-                      ? <Zap className="size-3.5 text-white" aria-hidden="true" />
-                      : <Sparkles className="size-3.5 text-ink-faint" aria-hidden="true" />}
+                    <Zap className={`size-3.5 ${i === 0 ? "text-white" : "text-ink-faint"}`} aria-hidden="true" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-semibold text-ink">{mod.title}</p>
@@ -239,10 +233,8 @@ export default function CpdPage() {
       {/* ── AI Learning Path Generator ────────────────────────────────────── */}
       <div className="mb-7">
         <div className="mb-3 flex items-center gap-2">
-          <Sparkles className="size-4 text-accent-ink" aria-hidden="true" />
+          <Search className="size-4 text-ink-faint" aria-hidden="true" />
           <h2 className="text-[14px] font-semibold text-ink">Learning path generator</h2>
-          <span className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
-            style={{ background: "var(--ok-soft)", color: "var(--ok)" }}>AI</span>
         </div>
 
         <div className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3 shadow-sm transition-colors focus-within:border-accent-ink/50">
@@ -278,14 +270,13 @@ export default function CpdPage() {
         {query && searchResults.length > 0 && (
           <Card className="mt-3 border-accent-ink/20">
             <CardHeader>
-              <CardTitle className="flex items-center gap-1.5 text-[13px]">
-                <Sparkles className="size-3.5 text-accent-ink" aria-hidden="true" />
-                AI-curated path for &ldquo;{query}&rdquo;
+              <CardTitle className="text-[13px]">
+                Results for &ldquo;{query}&rdquo;
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2 pt-0">
               {searchResults.map((r, i) => {
-                const tc = TOPIC_TOKEN[r.topic] ?? { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
+                const tc = { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
                 return (
                   <div key={r.id} className="flex items-start gap-3 rounded-xl border border-line p-4">
                     <div className="flex size-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-ink-faint"

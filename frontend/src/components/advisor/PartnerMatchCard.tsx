@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { IntroduceDialog } from "./IntroduceDialog";
@@ -20,8 +20,7 @@ export function PartnerMatchCard({ suggestion }: { suggestion: Suggestion }) {
   return (
     <div className="rounded-md border border-line p-3.5">
       {/* trigger line — the visible source */}
-      <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-medium text-accent-ink">
-        <Sparkles className="size-3" />
+      <p className="mb-2.5 text-[11px] font-medium text-accent-ink">
         {suggestion.trigger}
       </p>
 
