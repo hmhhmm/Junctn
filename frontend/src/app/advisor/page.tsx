@@ -51,10 +51,10 @@ function MetricStrip({
   };
 
   return (
-    <nav aria-label="Advisor metrics" className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-1 py-2.5">
+    <nav aria-label="Advisor metrics" className="flex flex-col gap-y-2 px-1 py-2.5 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-1.5">
       {items.map((item, i) => (
         <span key={i} className="flex items-center gap-1.5">
-          {i > 0 && <span className="hidden text-ink-faint/40 sm:inline" aria-hidden="true">·</span>}
+          {i > 0 && <span className="hidden text-ink-faint/40 md:inline" aria-hidden="true">·</span>}
           <Link
             href={item.href}
             className={`text-[13px] font-medium underline-offset-2 transition-colors hover:underline ${toneClass[item.tone]}`}
