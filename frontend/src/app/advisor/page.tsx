@@ -131,11 +131,21 @@ export default function AdvisorDashboard() {
   const topGap = gaps[0];
 
   // ── Briefing streaming ──────────────────────────────────────────────────
-  const [jobId, setJobId] = useState<string | null>(null);
+  const _sessionKey = `briefing_job_${advisorId}`;
+  const [jobId, setJobId] = useState<string | null>(
+    () => sessionStorage.getItem(_sessionKey),
+  );
   const [backendError, setBackendError] = useState(false);
   const { tokens, traceEvents, isDone, error } = useBriefingStream(jobId);
 
-  const startBriefing = useCallback(async () => {
+  const startBriefing = useCallback(async (force = false) => {
+    // Reuse the existing job for this session (tab switch / back-navigation).
+    // A hard refresh clears sessionStorage, so a new pipeline is triggered.
+    const existing = sessionStorage.getItem(_sessionKey);
+    if (existing && !force) {
+      setJobId(existing);
+      return;
+    }
     setJobId(null);
     setBackendError(false);
     try {
@@ -146,6 +156,7 @@ export default function AdvisorDashboard() {
         setAccessToken(tok);
       }
       const { job_id } = await generateBriefing(tok);
+      sessionStorage.setItem(_sessionKey, job_id);
       setJobId(job_id);
     } catch {
       setBackendError(true);
@@ -229,7 +240,7 @@ export default function AdvisorDashboard() {
         advisorId={advisorId}
         traceEvents={traceEvents}
         isDone={isDone}
-        onRetry={startBriefing}
+        onRetry={() => startBriefing(true)}
       />
 
       {/* ── Metric strip ────────────────────────────────────────────────── */}
