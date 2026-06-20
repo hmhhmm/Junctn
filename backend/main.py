@@ -6,6 +6,7 @@ from backend.api.audit import router as audit_router
 from backend.api.auth import router as auth_router
 from backend.api.briefing import router as briefing_router
 from backend.api.matching import router as matching_router
+from backend.api.cpd import router as cpd_router
 
 app = FastAPI(title="JUNCTN API", version="1.0.0")
 
@@ -21,6 +22,7 @@ app.include_router(auth_router)
 app.include_router(audit_router)
 app.include_router(briefing_router)
 app.include_router(matching_router)
+app.include_router(cpd_router)
 
 
 @app.get("/health")

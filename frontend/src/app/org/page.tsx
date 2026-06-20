@@ -6,6 +6,7 @@ import { getCriticalGaps, getTopPartners } from "@/lib/data";
 import { OrgMetrics } from "@/components/org/OrgMetrics";
 import { CoverageMatrix } from "@/components/org/CoverageMatrix";
 import { PipelineFunnel } from "@/components/org/PipelineFunnel";
+import { CpdComplianceTable } from "@/components/org/CpdComplianceTable";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -90,6 +91,10 @@ export default function OrgView() {
             ))}
           </CardContent>
         </Card>
+      </div>
+
+      <div className="mt-5">
+        <CpdComplianceTable />
       </div>
 
       <p className="mt-6 flex items-center justify-center gap-2 text-center text-[12px] text-ink-faint">
