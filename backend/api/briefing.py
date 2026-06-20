@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timezone
 
 import google.generativeai as genai
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from starlette.responses import StreamingResponse
 
 from backend.agents.pipeline import BriefingState, build_briefing_graph
@@ -20,7 +20,7 @@ genai.configure(api_key=settings.gemini_api_key)
 _model = genai.GenerativeModel("gemini-2.5-flash")
 
 
-def _run_pipeline(job: Job) -> None:
+def _run_pipeline(job: Job, gmail_threads: list[dict] | None = None) -> None:
     job.status = "running"
     update_job(job)
     try:
@@ -30,6 +30,7 @@ def _run_pipeline(job: Job) -> None:
             "calendar_data": [],
             "client_memory": {},
             "followup_list": [],
+            "gmail_threads": gmail_threads or [],
             "synthesised_text": "",
             "trace_events": [],
             "error": None,
@@ -53,11 +54,18 @@ def _run_pipeline(job: Job) -> None:
 
 @router.post("/generate")
 async def generate_briefing(
+    request: Request,
     background_tasks: BackgroundTasks,
     advisor_id: str = Depends(get_current_advisor),
 ) -> dict:
+    body: dict = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+    gmail_threads: list[dict] = body.get("gmail_threads", [])
     job = create_job(advisor_id)
-    background_tasks.add_task(_run_pipeline, job)
+    background_tasks.add_task(_run_pipeline, job, gmail_threads)
     return {"job_id": job.id, "status": "pending"}
 
 

@@ -17,7 +17,7 @@ Write a structured morning briefing using exactly these three section markers on
 
 Rules:
 - [CALENDAR]: 2-4 bullet points covering today's meetings. Include time, client name, key topic, and one flag per meeting if present.
-- [FOLLOWUPS]: bullet points for each client needing a follow-up. State the client name, reason, and urgency. If none, write "No follow-ups outstanding — good work."
+- [FOLLOWUPS]: bullet points for clients needing a follow-up. If a GMAIL INBOX section is provided, those are REAL unread emails from the advisor's actual inbox — list those first, naming the sender and subject. Then add any overdue CRM clients. If none, write "No follow-ups outstanding — good work."
 - [LD]: one sentence recommending the most relevant CPD action based on the advisor's client needs.
 - Tone: concise, professional, advisory-appropriate. No filler.
 - Use bullet points (•) not dashes."""
@@ -49,6 +49,14 @@ def _build_prompt(state: BriefingState) -> str:
         )
     if not state.get("followup_list"):
         lines.append("None")
+
+    gmail_threads = state.get("gmail_threads", [])
+    if gmail_threads:
+        lines.append("\n=== GMAIL INBOX (REAL EMAILS — ACTION REQUIRED) ===")
+        for t in gmail_threads:
+            unread_flag = " [UNREAD]" if t.get("unread") else ""
+            snippet = t.get("snippet", "")[:120]
+            lines.append(f"From: {t.get('from', 'Unknown')} | Subject: {t.get('subject', '(no subject)')}{unread_flag} | Preview: {snippet}")
 
     return "\n".join(lines)
 
