@@ -22,7 +22,7 @@ Rules:
 - Tone: concise, professional, advisory-appropriate. No filler.
 - Use bullet points (•) not dashes."""
 
-_model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=_SYSTEM)
+_model = genai.GenerativeModel("gemini-2.5-flash", system_instruction=_SYSTEM)
 
 
 def _build_prompt(state: BriefingState) -> str:

@@ -89,7 +89,7 @@ pytest tests/backend/streaming/ -v
 
 ### Smoke test (requires real GEMINI_API_KEY)
 ```bash
-# Set your real key first
+# Set your real key first, then ping the same model the app uses
 export GEMINI_API_KEY=your-real-key-here
 pytest tests/smoke/test_gemini_ping.py -v
 ```

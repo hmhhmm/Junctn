@@ -21,7 +21,7 @@ _SYSTEM = (
     "Return only valid JSON. No markdown, no explanation."
 )
 
-_model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=_SYSTEM)
+_model = genai.GenerativeModel("gemini-2.5-flash", system_instruction=_SYSTEM)
 
 
 def client_memory_agent(state: BriefingState) -> BriefingState:

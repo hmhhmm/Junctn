@@ -23,7 +23,7 @@ def test_gemini_ping():
     import google.generativeai as genai
 
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
     response = model.generate_content("ping")
 
@@ -41,7 +41,7 @@ def test_gemini_streaming_ping():
     import google.generativeai as genai
 
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
     chunks = list(model.generate_content("ping", stream=True))
 
@@ -59,7 +59,7 @@ def test_gemini_usage_metadata_available():
     import google.generativeai as genai
 
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
     response = model.generate_content("What is 1+1?")
 

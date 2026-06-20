@@ -17,7 +17,7 @@ from backend.services.job_store import Job, create_job, get_job
 router = APIRouter(prefix="/briefing", tags=["briefing"])
 
 genai.configure(api_key=settings.gemini_api_key)
-_model = genai.GenerativeModel("gemini-2.0-flash")
+_model = genai.GenerativeModel("gemini-2.5-flash")
 
 
 def _run_pipeline(job: Job) -> None:
