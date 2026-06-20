@@ -31,10 +31,28 @@ function buildQuickActions(client: Client): QA[] {
 
 function buildSystemContext(client: Client): string {
   const p = client.profile;
-  return `You are an AI assistant for a licensed financial adviser. Be concise (3-5 sentences), specific, and actionable.
-Client: ${client.name} | Status: ${client.status} | AUM: RM${(client.aum / 1_000_000).toFixed(2)}M
-Needs: ${client.needs.join(", ")} | Interests: ${p?.interests?.join(", ") || "not specified"}
-Family: ${p?.family?.join("; ") || "not specified"} | Communication: ${p?.communicationStyle || "professional"}`;
+  const recentNotes = client.notes
+    .slice(-3)
+    .map(n => `[${n.date} ${n.channel}] ${n.summary}`)
+    .join("\n");
+  const upcomingDates = p?.importantDates?.length
+    ? p.importantDates.map(d => `${d.label}: ${d.date}`).join(", ")
+    : "none on file";
+  const giftIdeas = p?.giftIdeas?.length ? p.giftIdeas.join(", ") : "none on file";
+
+  return `You are an AI assistant for a licensed financial adviser in Malaysia. Be concise (3-5 sentences), specific, and actionable. Reference client details naturally — never sound formulaic. Do NOT mention specific portfolio values or investment products by name.
+
+=== CLIENT PROFILE ===
+Name: ${client.name} | Status: ${client.status} | AUM: RM${(client.aum / 1_000_000).toFixed(2)}M
+Financial needs: ${client.needs.join(", ")}
+Communication style: ${p?.communicationStyle || "professional"}
+Interests: ${p?.interests?.join(", ") || "not specified"}
+Family: ${p?.family?.join("; ") || "not specified"}
+Important dates: ${upcomingDates}
+Gift ideas on file: ${giftIdeas}
+
+=== RECENT INTERACTIONS ===
+${recentNotes || "No recent notes."}`;
 }
 
 function staticReply(client: Client, text: string): string {

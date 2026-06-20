@@ -89,17 +89,32 @@ async def advisor_chat(
     req: AdvisorChatRequest,
     _advisor_id: str = Depends(get_current_advisor),
 ) -> dict:
-    prompt = f"""{req.system_context}
+    from backend.services.audit import append_audit
 
-Advisor asks: {req.message}
-
-Respond in 3–5 concise sentences. Be specific and actionable. Reference client details where relevant."""
-
+    chat_model = genai.GenerativeModel(
+        "gemini-2.5-flash",
+        system_instruction=req.system_context,
+    )
     try:
-        response = _model.generate_content(prompt)
-        return {"reply": response.text.strip()}
+        response = chat_model.generate_content(req.message)
+        reply = response.text.strip()
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"AI generation failed: {exc}",
         ) from exc
+
+    try:
+        input_tokens = response.usage_metadata.prompt_token_count
+    except Exception:
+        input_tokens = 0
+
+    append_audit(
+        advisor_id=_advisor_id,
+        feature="advisor_chat",
+        agent_step="gemini_chat",
+        input_token_count=input_tokens,
+        output_summary=f"Client chat reply ({len(reply)} chars)",
+    )
+
+    return {"reply": reply}
