@@ -338,6 +338,7 @@ const p = (
   name: string,
   specialty: string,
   region: string,
+  email: string,
   successRate: number,
   acceptanceRate: number,
   avgDaysToClose: number,
@@ -352,6 +353,7 @@ const p = (
     .join(""),
   specialty,
   region,
+  email,
   successRate,
   acceptanceRate,
   avgDaysToClose,
@@ -359,18 +361,18 @@ const p = (
 });
 
 export const partners: Partner[] = [
-  p("ptr-1", "Meridian Trust Advisory", "Estate & Trust", "Central", 0.92, 0.95, 18, { Central: 12, North: 2, East: 1, West: 3 }),
-  p("ptr-2", "Pinnacle Tax Partners", "Tax Planning", "Central", 0.88, 0.9, 21, { Central: 9, North: 1, East: 2, West: 1 }),
-  p("ptr-3", "Northgate Mortgage Co.", "Mortgage", "North", 0.8, 0.86, 14, { North: 8, Central: 2 }),
-  p("ptr-4", "Sentinel Corporate Risk", "Corporate Insurance", "East", 0.85, 0.88, 25, { East: 7, Central: 3, North: 1 }),
-  p("ptr-5", "Asia Capital Investments", "Investments", "Central", 0.9, 0.93, 12, { Central: 14, North: 3, East: 2, West: 4 }),
-  p("ptr-6", "Lex Estate Lawyers", "Legal / Will", "West", 0.83, 0.84, 30, { West: 6, Central: 2 }),
-  p("ptr-7", "Continuity Succession Group", "Business Succession", "Central", 0.78, 0.8, 35, { Central: 5, East: 1 }),
-  p("ptr-8", "Silverpine Retirement", "Retirement", "North", 0.87, 0.91, 16, { North: 6, Central: 1 }),
-  p("ptr-9", "Heritage Trust West", "Estate & Trust", "West", 0.81, 0.85, 22, { West: 5, Central: 1 }),
-  p("ptr-10", "Eastside Tax Chambers", "Tax Planning", "East", 0.84, 0.87, 20, { East: 5, Central: 1 }),
-  p("ptr-11", "Polaris Wealth (North)", "Investments", "North", 0.86, 0.9, 13, { North: 7, Central: 1 }),
-  p("ptr-12", "Westview Home Loans", "Mortgage", "West", 0.79, 0.82, 15, { West: 4, Central: 1 }),
+  p("ptr-1",  "Meridian Trust Advisory",     "Estate & Trust",      "Central", "referrals@meridiantrust.sg",      0.92, 0.95, 18, { Central: 12, North: 2, East: 1, West: 3 }),
+  p("ptr-2",  "Pinnacle Tax Partners",        "Tax Planning",        "Central", "intake@pinnacletax.sg",            0.88, 0.9,  21, { Central: 9, North: 1, East: 2, West: 1 }),
+  p("ptr-3",  "Northgate Mortgage Co.",       "Mortgage",            "North",   "hello@northgatemortgage.sg",       0.8,  0.86, 14, { North: 8, Central: 2 }),
+  p("ptr-4",  "Sentinel Corporate Risk",      "Corporate Insurance", "East",    "referrals@sentinelrisk.sg",        0.85, 0.88, 25, { East: 7, Central: 3, North: 1 }),
+  p("ptr-5",  "Asia Capital Investments",     "Investments",         "Central", "partnerships@asiacapital.sg",      0.9,  0.93, 12, { Central: 14, North: 3, East: 2, West: 4 }),
+  p("ptr-6",  "Lex Estate Lawyers",           "Legal / Will",        "West",    "intake@lexestate.sg",              0.83, 0.84, 30, { West: 6, Central: 2 }),
+  p("ptr-7",  "Continuity Succession Group",  "Business Succession", "Central", "referrals@continuitysg.sg",        0.78, 0.8,  35, { Central: 5, East: 1 }),
+  p("ptr-8",  "Silverpine Retirement",        "Retirement",          "North",   "hello@silverpineretirement.sg",    0.87, 0.91, 16, { North: 6, Central: 1 }),
+  p("ptr-9",  "Heritage Trust West",          "Estate & Trust",      "West",    "referrals@heritagetrust.sg",       0.81, 0.85, 22, { West: 5, Central: 1 }),
+  p("ptr-10", "Eastside Tax Chambers",  "Tax Planning", "East",  "hello@eastsidechambers.sg",       0.84, 0.87, 20, { East: 5, Central: 1 }),
+  p("ptr-11", "Polaris Wealth (North)", "Investments",  "North", "partnerships@polariswealth.sg",    0.86, 0.9,  13, { North: 7, Central: 1 }),
+  p("ptr-12", "Westview Home Loans",    "Mortgage",     "West",  "referrals@westviewloans.sg",       0.79, 0.82, 15, { West: 4, Central: 1 }),
 ];
 
 // ---------------------------------------------------------------------------

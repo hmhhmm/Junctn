@@ -52,6 +52,7 @@ export type Partner = {
   initials: string;
   specialty: string; // matches client needs
   region: string;
+  email: string;
   successRate: number; // 0..1, overall
   referralsFromDistrict: Record<string, number>; // district -> count
   acceptanceRate: number; // 0..1
