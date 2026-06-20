@@ -55,6 +55,7 @@ export function Sidebar() {
             badge: matchCount > 0 ? String(matchCount) : null,
             badgeWarn: false,
           },
+          { label: "Architecture", href: "/advisor/architecture", badge: null, badgeWarn: false },
         ]
       : role === "partner"
         ? [{ label: "Referral inbox", href: "/partner", badge: null, badgeWarn: false }]
@@ -138,7 +139,8 @@ export function Sidebar() {
             item.href === "/advisor" ||
             item.href === "/partner" ||
             item.href === "/org" ||
-            item.href === "/advisor/settings";
+            item.href === "/advisor/settings" ||
+            item.href === "/advisor/architecture";
           const active = isRoot
             ? pathname === item.href
             : pathname === item.href || pathname.startsWith(item.href + "/");
