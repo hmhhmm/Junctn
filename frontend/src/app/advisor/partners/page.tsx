@@ -8,11 +8,10 @@ import { Avatar } from "@/components/ui/avatar";
 import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
 import { Button } from "@/components/ui/button";
 import { ReferralKanban } from "@/components/advisor/ReferralKanban";
-import { RelationshipGraph } from "@/components/advisor/RelationshipGraph";
 import type { ApiPartnerMatch } from "@/lib/types";
 
 export default function PartnersPage() {
-  const { advisorId, referrals, matchCache, setMatchCache } = useStore();
+  const { advisorId, matchCache, setMatchCache } = useStore();
   const myClients = getClientsByAdvisor(advisorId).filter((c) => c.status !== "dormant");
   const topClient = myClients[0] ?? null;
 
@@ -71,15 +70,6 @@ export default function PartnersPage() {
           <span className="ml-1 text-[12px] text-ink-faint">Suggested → Introduced → In Progress → Closed</span>
         </div>
         <ReferralKanban advisorId={advisorId} />
-      </section>
-
-      {/* ── Relationship Graph ─────────────────────────────────────── */}
-      <section className="mb-10">
-        <div className="mb-4">
-          <h2 className="text-[14px] font-semibold text-ink">Advisor–partner ecosystem</h2>
-          <p className="text-[12px] text-ink-faint">Edge weight = number of closed referrals · hover a node to highlight connections</p>
-        </div>
-        <RelationshipGraph referrals={referrals} />
       </section>
 
       {/* ── Divider ────────────────────────────────────────────────── */}
