@@ -12,7 +12,7 @@ from backend.config import settings
 from backend.services.audit import append_audit
 from backend.services.auth import get_current_advisor
 from backend.services.data import get_advisor, get_client
-from backend.services.job_store import Job, create_job, get_job
+from backend.services.job_store import Job, create_job, get_job, update_job
 
 router = APIRouter(prefix="/briefing", tags=["briefing"])
 
@@ -22,6 +22,7 @@ _model = genai.GenerativeModel("gemini-2.5-flash")
 
 def _run_pipeline(job: Job) -> None:
     job.status = "running"
+    update_job(job)
     try:
         graph = build_briefing_graph()
         initial: BriefingState = {
@@ -42,9 +43,11 @@ def _run_pipeline(job: Job) -> None:
         job.trace_events = result["trace_events"]
         job.full_text = result["synthesised_text"]
         job.status = "complete"
+        update_job(job)
     except Exception as exc:
         job.status = "error"
         job.error = str(exc)
+        update_job(job)
 
 
 @router.post("/generate")

@@ -1,9 +1,13 @@
 from __future__ import annotations
+import json
 from datetime import date
 
 from backend.services.data import Client, get_clients_for_advisor, TODAY
 
 _UNANSWERED_SIGNALS = ("awaiting your response", "asked", "replied", "unanswered")
+
+_CACHE_TTL = 3600  # 1 hour
+_CACHE_PREFIX = "CONTEXT:"
 
 
 def _days_since(iso_date: str) -> int:
@@ -37,8 +41,7 @@ def _recent_notes(client: Client) -> list[dict]:
     ]
 
 
-def get_context(advisor_id: str) -> dict:
-    """Return per-client context for the advisor, keyed by client_id."""
+def _build_context(advisor_id: str) -> dict:
     result: dict = {}
     for c in get_clients_for_advisor(advisor_id):
         result[c.id] = {
@@ -55,3 +58,32 @@ def get_context(advisor_id: str) -> dict:
             "recent_notes": _recent_notes(c),
         }
     return result
+
+
+def get_context(advisor_id: str) -> dict:
+    """Return per-client context for the advisor, keyed by client_id.
+
+    Checks Redis first (1-hour TTL). Falls back to seeded data on cache miss
+    or Redis unavailability.
+    """
+    try:
+        from backend.services.redis_client import get_redis
+        r = get_redis()
+        cached = r.get(f"{_CACHE_PREFIX}{advisor_id}")
+        if cached:
+            return json.loads(cached)
+        context = _build_context(advisor_id)
+        r.setex(f"{_CACHE_PREFIX}{advisor_id}", _CACHE_TTL, json.dumps(context))
+        return context
+    except Exception:
+        # Redis unavailable — serve from source without caching
+        return _build_context(advisor_id)
+
+
+def invalidate_context(advisor_id: str) -> None:
+    """Remove the cached context for an advisor (call after any context write)."""
+    try:
+        from backend.services.redis_client import get_redis
+        get_redis().delete(f"{_CACHE_PREFIX}{advisor_id}")
+    except Exception:
+        pass
