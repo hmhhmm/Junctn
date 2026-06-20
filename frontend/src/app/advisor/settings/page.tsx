@@ -117,10 +117,18 @@ function SettingsContent() {
     const res = await fetch("/api/telegram/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: "👋 Test from Junctn — your notifications are working!\n\nTry /schedule, /inbox or /clients." }),
+      body: JSON.stringify({ text: "👋 Test from Junctn — your notifications are working!\n\nTry /briefing, /followups, /cpd, /schedule or /help." }),
     });
     if (res.ok) setFlash("✅ Test message sent!");
     else setFlash("Failed to send. Check bot token.");
+  }
+
+  async function sendMorningPush() {
+    const res = await fetch("/api/telegram/morning-push", { method: "POST" });
+    const d = await res.json();
+    if (d.ok) setFlash("✅ Morning briefing sent to Telegram!");
+    else if (d.skipped) setFlash("⚠️ No Telegram chat connected yet.");
+    else setFlash("Failed to send morning briefing.");
   }
 
   return (
@@ -294,9 +302,13 @@ function SettingsContent() {
                         {status.telegram.username ? `@${status.telegram.username}` : "your Telegram"}
                       </strong>
                     </p>
-                    <div className="mt-3 flex gap-2">
+                    <div className="mt-3 flex flex-wrap gap-2">
                       <Button variant="soft" size="sm" onClick={sendTestMessage}>
                         Send test message
+                      </Button>
+                      <Button variant="soft" size="sm" onClick={sendMorningPush}>
+                        <Send className="size-3.5" />
+                        Send morning briefing
                       </Button>
                       <Button
                         variant="ghost"
