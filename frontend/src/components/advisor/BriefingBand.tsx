@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Sparkles, ArrowRight, ListChecks, MessageSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { draftFollowup } from "@/lib/api";
+import { getClientsByAdvisor } from "@/lib/data";
 
 interface Section {
   type: "CALENDAR" | "FOLLOWUPS" | "LD";
@@ -95,10 +96,20 @@ interface BriefingBandProps {
   error: string | null;
   fallbackText?: string;
   token?: string;
+  advisorId?: string;
 }
 
-export function BriefingBand({ tokens, isStreaming, error, fallbackText, token }: BriefingBandProps) {
+export function BriefingBand({ tokens, isStreaming, error, fallbackText, token, advisorId }: BriefingBandProps) {
   const [draftTarget, setDraftTarget] = useState<{ clientId: string; clientName: string } | null>(null);
+
+  function resolveClientId(name: string): string {
+    if (!advisorId) return "";
+    const lower = name.toLowerCase();
+    const match = getClientsByAdvisor(advisorId).find(
+      (c) => c.name.toLowerCase().includes(lower) || lower.includes(c.name.split(" ")[0].toLowerCase()),
+    );
+    return match?.id ?? "";
+  }
 
   const displayText = tokens || fallbackText || "";
   const sections = parseSections(displayText);
@@ -174,7 +185,7 @@ export function BriefingBand({ tokens, isStreaming, error, fallbackText, token }
                           <p className="flex-1 text-[14px] leading-relaxed opacity-90">{line}</p>
                           {section.type === "FOLLOWUPS" && clientName && token && (
                             <button
-                              onClick={() => setDraftTarget({ clientId: "", clientName })}
+                              onClick={() => setDraftTarget({ clientId: resolveClientId(clientName), clientName })}
                               className="mt-0.5 shrink-0 rounded p-1 opacity-60 transition hover:opacity-100"
                               title="Draft follow-up message"
                             >

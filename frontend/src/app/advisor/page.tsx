@@ -109,6 +109,7 @@ export default function AdvisorDashboard() {
         error={streamError}
         fallbackText={brief.briefingText}
         token={accessToken ?? undefined}
+        advisorId={advisorId}
       />
 
       {/* Metric row */}

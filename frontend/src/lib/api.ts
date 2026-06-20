@@ -18,7 +18,7 @@ export async function login(advisorId: string, password = "demo"): Promise<Login
 }
 
 export async function generateBriefing(token: string): Promise<{ job_id: string }> {
-  const res = await fetch(`${BASE}/briefing/generate`, {
+  const res = await fetch("/api/briefing/generate", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -30,7 +30,7 @@ export async function draftFollowup(
   token: string,
   clientId: string,
 ): Promise<{ draft: string; client_name: string }> {
-  const res = await fetch(`${BASE}/briefing/draft-followup`, {
+  const res = await fetch("/api/briefing/draft-followup", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -43,5 +43,5 @@ export async function draftFollowup(
 }
 
 export function getBriefingStreamUrl(jobId: string): string {
-  return `${BASE}/briefing/stream/${jobId}`;
+  return `/api/briefing/stream/${jobId}`;
 }

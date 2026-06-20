@@ -29,7 +29,7 @@ const roles = [
 export function Topbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { advisorId, setAdvisorId, partnerId, setPartnerId } = useStore();
+  const { advisorId, setAdvisorId, partnerId, setPartnerId, completedModuleIds } = useStore();
   const { theme, toggle } = useTheme();
 
   const role = pathname.startsWith("/partner")
@@ -41,7 +41,7 @@ export function Topbar() {
   const currentAdvisor = advisors.find((a) => a.id === advisorId)!;
   const currentPartner = partners.find((p) => p.id === partnerId)!;
 
-  const cpd = getCpdStatus(advisorId);
+  const cpd = getCpdStatus(advisorId, completedModuleIds);
   const matchCount = suggestions.filter(
     (s) => s.advisorId === advisorId && s.kind === "partner_match",
   ).length;
