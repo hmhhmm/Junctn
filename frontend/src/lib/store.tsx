@@ -31,8 +31,10 @@ type StoreValue = {
   referrals: Referral[];
   advisorId: string;
   partnerId: string;
+  accessToken: string | null;
   setAdvisorId: (id: string) => void;
   setPartnerId: (id: string) => void;
+  setAccessToken: (token: string) => void;
   addReferral: (input: IntroduceInput) => void;
   updateReferralStatus: (id: string, status: ReferralStatus) => void;
   toasts: ToastMsg[];
@@ -48,8 +50,8 @@ let toastSeq = 0;
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [referrals, setReferrals] = useState<Referral[]>(seedReferrals);
   const [advisorId, setAdvisorId] = useState(DEFAULT_ADVISOR_ID);
-  // default partner = the busiest one so the inbox looks alive
   const [partnerId, setPartnerId] = useState(partners[0].id);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [toasts, setToasts] = useState<ToastMsg[]>([]);
 
   const pushToast = useCallback((title: string, detail?: string) => {
@@ -90,15 +92,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       referrals,
       advisorId,
       partnerId,
+      accessToken,
       setAdvisorId,
       setPartnerId,
+      setAccessToken,
       addReferral,
       updateReferralStatus,
       toasts,
       pushToast,
       dismissToast,
     }),
-    [referrals, advisorId, partnerId, toasts, addReferral, updateReferralStatus, pushToast, dismissToast],
+    [referrals, advisorId, partnerId, accessToken, toasts, addReferral, updateReferralStatus, pushToast, dismissToast],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

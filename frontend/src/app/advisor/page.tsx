@@ -3,21 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Users,
-  Network,
-  GraduationCap,
-  AlertTriangle,
-  MessageSquareWarning,
-  FileWarning,
-  ShieldCheck,
-  ChevronRight,
-  Sparkles,
-  RefreshCw,
-  ArrowRight,
+  Users, Network, GraduationCap, AlertTriangle,
+  MessageSquareWarning, FileWarning, ShieldCheck, ChevronRight,
+  Sparkles, RefreshCw, ArrowRight,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { getMorningBriefing, getCriticalGaps, getClient } from "@/lib/data";
+import { login, generateBriefing } from "@/lib/api";
+import { useBriefingStream } from "@/hooks/useBriefingStream";
 import { BriefingBand } from "@/components/advisor/BriefingBand";
+import { AgentTracePanel } from "@/components/advisor/AgentTracePanel";
 import { MetricCard } from "@/components/advisor/MetricCard";
 import { LiveCalendar } from "@/components/advisor/LiveCalendar";
 import { LiveGmail } from "@/components/advisor/LiveGmail";
@@ -29,7 +24,7 @@ import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
 import type { ApiPartnerMatch } from "@/app/api/match/route";
 
 export default function AdvisorDashboard() {
-  const { advisorId, referrals } = useStore();
+  const { advisorId, referrals, accessToken, setAccessToken } = useStore();
   const brief = getMorningBriefing(advisorId, referrals);
   const gaps = getCriticalGaps();
   const topGap = gaps[0];
@@ -37,12 +32,49 @@ export default function AdvisorDashboard() {
   const attention = brief.suggestions.filter((s) => s.kind === "followup");
   const missingMeetings = brief.meetings.filter((m) => m.flag?.kind === "missing");
 
-  // Live partner matches from ChromaDB via backend
+  // ── Briefing streaming ──────────────────────────────────────────────────────
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [backendError, setBackendError] = useState(false);
+
+  const { tokens, traceEvents, isDone, error } = useBriefingStream(jobId);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function init() {
+      try {
+        let token = accessToken;
+        if (!token) {
+          const res = await login(advisorId);
+          token = res.access_token;
+          setAccessToken(token);
+        }
+        if (cancelled) return;
+
+        const { job_id } = await generateBriefing(token);
+        if (!cancelled) setJobId(job_id);
+      } catch {
+        if (!cancelled) setBackendError(true);
+      }
+    }
+
+    setJobId(null);
+    setBackendError(false);
+    init();
+
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [advisorId]);
+
+  const streamError = backendError
+    ? "Briefing unavailable — please refresh"
+    : error;
+
+  // ── Live partner matches from embedding search ──────────────────────────────
   const [matches, setMatches] = useState<ApiPartnerMatch[]>([]);
   const [matchLoading, setMatchLoading] = useState(true);
 
   useEffect(() => {
-    // Use needs from clients flagged in suggestions as the query signal
     const topicHints = brief.suggestions
       .filter((s) => s.kind === "partner_match")
       .map((s) => s.trigger)
@@ -61,7 +93,6 @@ export default function AdvisorDashboard() {
       .finally(() => setMatchLoading(false));
   }, [advisorId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Find a client to associate with each match (first client flagged in partner suggestions)
   function getMatchClient() {
     const clients = brief.suggestions
       .filter((s) => s.kind === "partner_match" && s.payload.clientId)
@@ -72,7 +103,13 @@ export default function AdvisorDashboard() {
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-6">
-      <BriefingBand text={brief.briefingText} />
+      <BriefingBand
+        tokens={tokens}
+        isStreaming={!!jobId && !isDone}
+        error={streamError}
+        fallbackText={brief.briefingText}
+        token={accessToken ?? undefined}
+      />
 
       {/* Metric row */}
       <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -89,10 +126,8 @@ export default function AdvisorDashboard() {
           icon={AlertTriangle} tone="alert" />
       </div>
 
-      {/* Balanced two-column layout */}
       <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_340px]">
-
-        {/* ── Left: workspace ──────────────────────────────────────────── */}
+        {/* Left */}
         <div className="flex flex-col gap-5">
           <LiveCalendar fallbackMeetings={brief.meetings} />
 
@@ -141,11 +176,10 @@ export default function AdvisorDashboard() {
             </Card>
           )}
 
-          {/* Gmail in left column — keeps right rail lean */}
           <LiveGmail maxItems={5} />
         </div>
 
-        {/* ── Right rail: live partner matches + CPD ───────────────────── */}
+        {/* Right rail: live AI partner matches + CPD */}
         <div className="flex flex-col gap-5">
           <Card id="partners">
             <CardHeader className="flex items-center justify-between">
@@ -214,7 +248,6 @@ export default function AdvisorDashboard() {
               )}
             </CardContent>
           </Card>
-
           <div className="flex flex-1 flex-col">
             <CpdCard advisorId={advisorId} />
           </div>
@@ -226,6 +259,11 @@ export default function AdvisorDashboard() {
         Every suggestion shows its source. Introductions are logged and require your approval
         before any partner is contacted.
       </p>
+
+      {/* Agent trace panel — fixed right sidebar */}
+      {jobId && (
+        <AgentTracePanel traceEvents={traceEvents} isDone={isDone} />
+      )}
     </div>
   );
 }
