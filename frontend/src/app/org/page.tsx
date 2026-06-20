@@ -7,6 +7,7 @@ import { OrgMetrics } from "@/components/org/OrgMetrics";
 import { CoverageMatrix } from "@/components/org/CoverageMatrix";
 import { PipelineFunnel } from "@/components/org/PipelineFunnel";
 import { CpdComplianceTable } from "@/components/org/CpdComplianceTable";
+import { AuditLogTable } from "@/components/org/AuditLogTable";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -95,6 +96,10 @@ export default function OrgView() {
 
       <div className="mt-5">
         <CpdComplianceTable />
+      </div>
+
+      <div className="mt-5">
+        <AuditLogTable />
       </div>
 
       <p className="mt-6 flex items-center justify-center gap-2 text-center text-[12px] text-ink-faint">
