@@ -17,7 +17,11 @@ Write a structured morning briefing using exactly these three section markers on
 
 Rules:
 - [CALENDAR]: 2-4 bullet points covering today's meetings. Include time, client name, key topic, and one flag per meeting if present.
-- [FOLLOWUPS]: bullet points for clients needing a follow-up. If a GMAIL INBOX section is provided, those are REAL unread emails from the advisor's actual inbox — list those first, naming the sender and subject. Then add any overdue CRM clients. If none, write "No follow-ups outstanding — good work."
+- [FOLLOWUPS]: 3-4 bullet points maximum, ranked by urgency. Combine Gmail and CRM sources, but apply strict relevance filtering:
+  * INCLUDE from Gmail: emails from clients, compliance bodies, regulators, partners, or colleagues about financial matters.
+  * EXCLUDE from Gmail: newsletters, marketing, promotions, job alerts, social media notifications, GitHub, shopping sites, entertainment (e.g. Glassdoor, IMDb, Shopee, Educative, LinkedIn promotions). These are noise — omit them entirely.
+  * INCLUDE from CRM: clients not contacted in >14 days, unanswered client messages, meeting notes not captured.
+  * If no relevant follow-ups exist, write "No follow-ups outstanding — good work."
 - [LD]: one sentence recommending the most relevant CPD action based on the advisor's client needs.
 - Tone: concise, professional, advisory-appropriate. No filler.
 - Use bullet points (•) not dashes."""

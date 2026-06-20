@@ -53,6 +53,7 @@ def followup_agent(state: BriefingState) -> BriefingState:
         0 if x["urgency"] == "high" else 1 if x["urgency"] == "medium" else 2,
         -x["days_overdue"],
     ))
+    followup_list = followup_list[:4]
 
     trace_events = list(state.get("trace_events", []))
     trace_events.append({
