@@ -24,8 +24,8 @@ const CSS = `
   from { opacity: 1; transform: translateX(0)   scale(1); }
   to   { opacity: 0; transform: translateX(24px) scale(0.97); }
 }
-.ps-enter-right { animation: ps-slide-in-right 0.32s cubic-bezier(.22,.68,0,1.2) forwards; }
-.ps-enter-left  { animation: ps-slide-in-left  0.32s cubic-bezier(.22,.68,0,1.2) forwards; }
+.ps-enter-right { animation: ps-slide-in-right 0.32s cubic-bezier(0.16,1,0.3,1) forwards; }
+.ps-enter-left  { animation: ps-slide-in-left  0.32s cubic-bezier(0.16,1,0.3,1) forwards; }
 .ps-exit-left   { animation: ps-fade-out-left  0.18s ease-in forwards; }
 .ps-exit-right  { animation: ps-fade-out-right 0.18s ease-in forwards; }
 `;
@@ -78,15 +78,15 @@ export function PerformanceStack({
       id: "aum",
       label: "Assets Under Management",
       icon: TrendingUp,
-      value: `S$${(totalAum / 1_000_000).toFixed(1)}M`,
+      value: `RM${(totalAum / 1_000_000).toFixed(1)}M`,
       sub: "Total book value this quarter",
       accent: "#2dd4bf",
       bg: "rgba(45,212,191,0.06)",
       progress: Math.min(totalAum / 10_000_000, 1),
       statsRow: [
         { label: "Clients", value: totalClients },
-        { label: "Avg AUM", value: `S$${(totalAum / Math.max(totalClients, 1) / 1_000_000).toFixed(1)}M` },
-        { label: "Target", value: "S$10M" },
+        { label: "Avg AUM", value: `RM${(totalAum / Math.max(totalClients, 1) / 1_000_000).toFixed(1)}M` },
+        { label: "Target", value: "RM10M" },
       ],
     },
     {
@@ -94,13 +94,13 @@ export function PerformanceStack({
       label: "Revenue Goal",
       icon: Target,
       value: `${Math.round(goalPct * 100)}%`,
-      sub: `S$${estimatedRevenue.toLocaleString()} earned · target S$${(goalTarget / 1000).toFixed(0)}K`,
+      sub: `RM${estimatedRevenue.toLocaleString()} earned · target RM${(goalTarget / 1000).toFixed(0)}K`,
       accent: goalPct >= 1 ? "#10b981" : "#f59e0b",
       bg: goalPct >= 1 ? "rgba(16,185,129,0.06)" : "rgba(245,158,11,0.06)",
       progress: goalPct,
       statsRow: [
-        { label: "Earned", value: `S$${(estimatedRevenue / 1000).toFixed(0)}K` },
-        { label: "Remaining", value: `S$${Math.max(0, (goalTarget - estimatedRevenue) / 1000).toFixed(0)}K` },
+        { label: "Earned", value: `RM${(estimatedRevenue / 1000).toFixed(0)}K` },
+        { label: "Remaining", value: `RM${Math.max(0, (goalTarget - estimatedRevenue) / 1000).toFixed(0)}K` },
         { label: "Referrals", value: closedReferrals },
       ],
     },

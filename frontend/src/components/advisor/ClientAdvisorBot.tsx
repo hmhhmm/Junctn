@@ -20,7 +20,7 @@ function buildQuickActions(client: Client): QA[] {
     },
     {
       id: "gift", label: "Gift ideas", icon: Gift,
-      prompt: `Suggest 3 personalised gift ideas for ${name} who enjoys ${likes}. Keep professional, under S$150 each.`,
+      prompt: `Suggest 3 personalised gift ideas for ${name} who enjoys ${likes}. Keep professional, under RM150 each.`,
     },
     {
       id: "activities", label: "Activity ideas", icon: MapPin,
@@ -32,7 +32,7 @@ function buildQuickActions(client: Client): QA[] {
 function buildSystemContext(client: Client): string {
   const p = client.profile;
   return `You are an AI assistant for a licensed financial adviser. Be concise (3-5 sentences), specific, and actionable.
-Client: ${client.name} | Status: ${client.status} | AUM: S$${(client.aum / 1_000_000).toFixed(2)}M
+Client: ${client.name} | Status: ${client.status} | AUM: RM${(client.aum / 1_000_000).toFixed(2)}M
 Needs: ${client.needs.join(", ")} | Interests: ${p?.interests?.join(", ") || "not specified"}
 Family: ${p?.family?.join("; ") || "not specified"} | Communication: ${p?.communicationStyle || "professional"}`;
 }
@@ -116,7 +116,7 @@ export function ClientAdvisorBot({ client, open, onToggle }: Props) {
           width: 340,
           zIndex: 40,
           transform: open ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 300ms cubic-bezier(.22,.68,0,1.15)",
+          transition: "transform 300ms cubic-bezier(0.16,1,0.3,1)",
           display: "flex",
           flexDirection: "column",
           borderLeft: "1px solid var(--line)",
@@ -258,7 +258,7 @@ export function ClientAdvisorBot({ client, open, onToggle }: Props) {
           border: "1px solid",
           borderColor: open ? "var(--line)" : "transparent",
           color: open ? "var(--ink-faint)" : "#fff",
-          transition: "right 300ms cubic-bezier(.22,.68,0,1.15), background 200ms, color 200ms",
+          transition: "right 300ms cubic-bezier(0.16,1,0.3,1), background 200ms, color 200ms",
         }}
       >
         {open
