@@ -39,7 +39,7 @@ export function PartnerMatchCard({ suggestion }: { suggestion: Suggestion }) {
         </div>
       </div>
 
-      <p className="mt-2.5 rounded bg-[#f9f9fc] px-2 py-1.5 text-[11px] leading-relaxed text-ink-soft">
+      <p className="mt-2.5 rounded bg-surface-raised px-2 py-1.5 text-[11px] leading-relaxed text-ink-soft">
         {reason}
       </p>
 

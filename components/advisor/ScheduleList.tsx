@@ -79,7 +79,7 @@ export function ScheduleList({ meetings }: { meetings: Meeting[] }) {
                 {mt.clientId ? (
                   <Link
                     href={`/advisor/clients/${mt.clientId}`}
-                    className="block rounded-md transition-colors hover:bg-[#f9f9fc]"
+                    className="block rounded-md transition-colors hover:bg-surface-hover"
                   >
                     {Inner}
                   </Link>

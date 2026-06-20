@@ -66,7 +66,7 @@ export function IntroduceDialog({
         </DialogHeader>
 
         {/* Connection summary */}
-        <div className="flex items-center gap-3 rounded-md border border-line bg-[#f9f9fc] p-3">
+        <div className="flex items-center gap-3 rounded-md border border-line bg-surface-raised p-3">
           <div className="flex items-center gap-2">
             <Avatar initials={client.initials} size="sm" tone="neutral" />
             <div className="leading-tight">

@@ -1,6 +1,5 @@
 "use client";
 
-import { use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -37,8 +36,8 @@ const channelIcon = {
   Note: StickyNote,
 } as const;
 
-export default function ClientPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ClientPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const { referrals } = useStore();
   const client = getClient(id);
   if (!client) return notFound();
@@ -238,7 +237,7 @@ export default function ClientPage({ params }: { params: Promise<{ id: string }>
                         {m.score}
                       </span>
                     </div>
-                    <p className="mt-2 rounded bg-[#f9f9fc] px-2 py-1.5 text-[11px] text-ink-soft">
+                    <p className="mt-2 rounded bg-surface-raised px-2 py-1.5 text-[11px] text-ink-soft">
                       {m.reason}
                     </p>
                     <IntroduceDialog

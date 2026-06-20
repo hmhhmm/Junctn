@@ -19,7 +19,8 @@ import {
 } from "@/lib/data";
 import { BriefingBand } from "@/components/advisor/BriefingBand";
 import { MetricCard } from "@/components/advisor/MetricCard";
-import { ScheduleList } from "@/components/advisor/ScheduleList";
+import { LiveCalendar } from "@/components/advisor/LiveCalendar";
+import { LiveGmail } from "@/components/advisor/LiveGmail";
 import { PartnerMatchCard } from "@/components/advisor/PartnerMatchCard";
 import { CpdCard } from "@/components/advisor/CpdCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -79,7 +80,8 @@ export default function AdvisorDashboard() {
       <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_360px]">
         {/* Left */}
         <div className="flex flex-col gap-5">
-          <ScheduleList meetings={brief.meetings} />
+          {/* Smart calendar: real Google Calendar when connected, mock fallback otherwise */}
+          <LiveCalendar fallbackMeetings={brief.meetings} />
 
           {/* Needs your attention */}
           <Card id="followups">
@@ -96,7 +98,7 @@ export default function AdvisorDashboard() {
                   <Link
                     key={s.id}
                     href={client ? `/advisor/clients/${client.id}` : "#"}
-                    className="group flex items-start gap-3 rounded-md border border-line p-3 transition-colors hover:bg-[#f9f9fc]"
+                    className="group flex items-start gap-3 rounded-md border border-line p-3 transition-colors hover:bg-surface-hover"
                   >
                     <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-alert-soft text-alert">
                       <MessageSquareWarning className="size-4" />
@@ -116,13 +118,15 @@ export default function AdvisorDashboard() {
                 <Link
                   key={m.id}
                   href={m.clientId ? `/advisor/clients/${m.clientId}` : "#"}
-                  className="group flex items-start gap-3 rounded-md border border-line p-3 transition-colors hover:bg-[#f9f9fc]"
+                  className="group flex items-start gap-3 rounded-md border border-line p-3 transition-colors hover:bg-surface-hover"
                 >
                   <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-warn-soft text-warn">
                     <FileWarning className="size-4" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-medium text-ink">Capture notes for {getClient(m.clientId!)?.name}</p>
+                    <p className="text-[13px] font-medium text-ink">
+                      Capture notes for {getClient(m.clientId!)?.name}
+                    </p>
                     <p className="mt-0.5 text-[11px] font-medium text-accent-ink">{m.flag?.text}</p>
                   </div>
                   <ChevronRight className="mt-1 size-4 shrink-0 text-ink-faint transition-transform group-hover:translate-x-0.5" />
@@ -150,6 +154,9 @@ export default function AdvisorDashboard() {
           </Card>
 
           <CpdCard advisorId={advisorId} />
+
+          {/* Live Gmail — right rail */}
+          <LiveGmail />
         </div>
       </div>
 

@@ -120,7 +120,7 @@ export default function PartnersPage() {
       {/* Partner grid */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {sorted.map((partner) => {
-          const sc = specialtyColors[partner.specialty] ?? { bg: "#f1f5f9", color: "#475569" };
+          const sc = specialtyColors[partner.specialty] ?? { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
           const matchData = partnerScores[partner.id];
           const hasMatch = matchData && matchData.score > 0;
 
@@ -166,7 +166,7 @@ export default function PartnersPage() {
               {/* Stats strip */}
               <div
                 className="mt-3 flex gap-4 rounded-lg p-2.5 text-center"
-                style={{ background: "#f8f7f4" }}
+                style={{ background: "var(--surface-raised)" }}
               >
                 <div className="flex-1">
                   <p className="font-display text-[16px] font-bold text-ink">

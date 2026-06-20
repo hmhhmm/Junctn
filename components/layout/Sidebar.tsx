@@ -74,9 +74,8 @@ export function Sidebar() {
     >
       {/* ── Wordmark ─────────────────────────────── */}
       <div className="px-5 pb-4 pt-6">
-        <h1 className="text-[22px] font-black leading-none tracking-[0.2em]">
-          <span style={{ color: "#2dd4bf" }}>J</span>
-          <span style={{ color: "#f1f5f9" }}>UNCTN</span>
+        <h1 className="text-[22px] font-black leading-none tracking-[0.2em] text-white">
+          JUNCTN
         </h1>
         <p className="mt-2 text-[10px] leading-snug" style={{ color: "#1e3a5f" }}>
           where every relationship meets
@@ -134,11 +133,12 @@ export function Sidebar() {
 
       {/* ── Nav ──────────────────────────────────── */}
       <nav className="flex flex-1 flex-col py-2">
-        {nav.map((item) => {
+        {[...nav, ...(role === "advisor" ? [{ label: "Settings", href: "/advisor/settings", badge: null, badgeWarn: false }] : [])].map((item) => {
           const isRoot =
             item.href === "/advisor" ||
             item.href === "/partner" ||
-            item.href === "/org";
+            item.href === "/org" ||
+            item.href === "/advisor/settings";
           const active = isRoot
             ? pathname === item.href
             : pathname === item.href || pathname.startsWith(item.href + "/");

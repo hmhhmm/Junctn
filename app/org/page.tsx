@@ -25,7 +25,7 @@ export default function OrgView() {
             Network health across the advisor force — coverage, pipeline, compliance.
           </p>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-[#f4f4f8] px-2.5 py-1 text-[11px] font-medium text-ink-soft">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-raised px-2.5 py-1 text-[11px] font-medium text-ink-soft">
           <Lock className="size-3.5 text-ok" />
           Aggregate &amp; anonymised — no individual client data
         </span>

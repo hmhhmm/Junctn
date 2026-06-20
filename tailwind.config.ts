@@ -35,6 +35,8 @@ const config: Config = {
           DEFAULT: "var(--ok)",
           soft: "var(--ok-soft)",
         },
+        "surface-raised": "var(--surface-raised)",
+        "surface-hover": "var(--surface-hover)",
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],

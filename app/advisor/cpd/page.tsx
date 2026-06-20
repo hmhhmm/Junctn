@@ -17,7 +17,7 @@ const topicColors: Record<string, { bg: string; color: string }> = {
   "Legal / Will": { bg: "#fee2e2", color: "#c53030" },
   "Business Succession": { bg: "#ffedd5", color: "#c2410c" },
   Retirement: { bg: "#e0f2fe", color: "#0369a1" },
-  Compliance: { bg: "#f1f5f9", color: "#475569" },
+  Compliance: { bg: "var(--surface-raised)", color: "var(--ink-soft)" },
   Practice: { bg: "#fce7f3", color: "#9d174d" },
 };
 
@@ -140,7 +140,7 @@ export default function CpdPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-2 pt-0">
             {requiredRemaining.map((mod) => {
-              const tc = topicColors[mod.topic] ?? { bg: "#f1f5f9", color: "#475569" };
+              const tc = topicColors[mod.topic] ?? { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
               return (
                 <div
                   key={mod.id}
@@ -184,7 +184,7 @@ export default function CpdPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-2 pt-0">
             {optional.map((mod) => {
-              const tc = topicColors[mod.topic] ?? { bg: "#f1f5f9", color: "#475569" };
+              const tc = topicColors[mod.topic] ?? { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
               return (
                 <div
                   key={mod.id}
@@ -228,11 +228,11 @@ export default function CpdPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-2 pt-0">
             {completed.map((mod) => {
-              const tc = topicColors[mod.topic] ?? { bg: "#f1f5f9", color: "#475569" };
+              const tc = topicColors[mod.topic] ?? { bg: "var(--surface-raised)", color: "var(--ink-soft)" };
               return (
                 <div
                   key={mod.id}
-                  className="flex items-center gap-3 rounded-lg border border-line bg-[#fafaf8] p-3 opacity-70"
+                  className="flex items-center gap-3 rounded-lg border border-line bg-surface-raised p-3 opacity-70"
                 >
                   <CheckCircle2 className="size-4 shrink-0 text-ok" />
                   <div className="min-w-0 flex-1">

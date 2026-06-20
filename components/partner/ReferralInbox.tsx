@@ -45,7 +45,7 @@ export function ReferralInbox({ partnerId }: { partnerId: string }) {
                     From {advisor.name} · {advisor.district} district · {referral.createdAt}
                   </p>
                   {referral.note && (
-                    <p className="mt-2 rounded bg-[#f9f9fc] px-2.5 py-1.5 text-[12px] italic text-ink-soft">
+                    <p className="mt-2 rounded bg-surface-raised px-2.5 py-1.5 text-[12px] italic text-ink-soft">
                       “{referral.note}”
                     </p>
                   )}

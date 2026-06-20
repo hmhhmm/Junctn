@@ -62,7 +62,7 @@ export function CoverageMatrix() {
                             ? c.coverage > 1
                               ? "bg-accent text-white"
                               : "bg-accent/70 text-white"
-                            : "bg-[#f1f1f6] text-ink-faint",
+                            : "bg-surface-raised text-ink-faint",
                       )}
                       title={`${s} · ${r}: ${c.coverage} partner(s), ${c.demand} client need(s)`}
                     >

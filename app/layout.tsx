@@ -21,7 +21,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Junctn — where every relationship meets",
+  title: "Junctn",
   description:
     "AI-native infrastructure for an advisory force: advisor productivity, a living L&D library, and an advisor-mediated partnership ecosystem.",
 };

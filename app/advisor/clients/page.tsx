@@ -15,7 +15,7 @@ const statusConfig: Record<
   active: { label: "Active", color: "#166534", bg: "#dcfce7" },
   prospect: { label: "Prospect", color: "#134e4a", bg: "#ccfbf1" },
   review_due: { label: "Review due", color: "#b45309", bg: "#fef3c7" },
-  dormant: { label: "Dormant", color: "#64748b", bg: "#f1f5f9" },
+  dormant: { label: "Dormant", color: "var(--ink-soft)", bg: "var(--surface-raised)" },
 };
 
 const statusOrder: Client["status"][] = ["review_due", "active", "prospect", "dormant"];
@@ -72,7 +72,7 @@ export default function ClientsPage() {
                 style={
                   filterStatus === s
                     ? { background: cfg?.bg ?? "#0f1923", color: cfg?.color ?? "#fff" }
-                    : { background: "#f1f5f9", color: "#64748b" }
+                    : { background: "var(--surface-raised)", color: "var(--ink-soft)" }
                 }
               >
                 {s === "all" ? "All" : cfg!.label} ({count})
@@ -133,7 +133,7 @@ export default function ClientsPage() {
                     <span
                       key={t}
                       className="rounded-md px-2 py-0.5 text-[11px]"
-                      style={{ background: "#f1f5f9", color: "#64748b" }}
+                      style={{ background: "var(--surface-raised)", color: "var(--ink-soft)" }}
                     >
                       {t}
                     </span>
