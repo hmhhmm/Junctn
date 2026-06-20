@@ -12,11 +12,10 @@ import {
   BarChart2,
   Sun,
   Moon,
-  ShieldCheck,
   ChevronDown,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { advisors, partners, getCpdStatus, suggestions } from "@/lib/data";
+import { advisors, partners } from "@/lib/data";
 import { Avatar } from "@/components/ui/avatar";
 import { useTheme } from "./ThemeProvider";
 
@@ -29,7 +28,7 @@ const roles = [
 export function Topbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { advisorId, setAdvisorId, partnerId, setPartnerId, completedModuleIds } = useStore();
+  const { advisorId, setAdvisorId, partnerId, setPartnerId } = useStore();
   const { theme, toggle } = useTheme();
 
   const role = pathname.startsWith("/partner")
@@ -41,38 +40,19 @@ export function Topbar() {
   const currentAdvisor = advisors.find((a) => a.id === advisorId)!;
   const currentPartner = partners.find((p) => p.id === partnerId)!;
 
-  const cpd = getCpdStatus(advisorId, completedModuleIds);
-  const matchCount = suggestions.filter(
-    (s) => s.advisorId === advisorId && s.kind === "partner_match",
-  ).length;
-
   // Nav items per role
   const navItems =
     role === "advisor"
       ? [
-          { label: "Dashboard", href: "/advisor", icon: LayoutDashboard, badge: null, badgeWarn: false, exact: true },
-          { label: "Clients", href: "/advisor/clients", icon: Users, badge: null, badgeWarn: false, exact: false },
-          {
-            label: "Learning",
-            href: "/advisor/cpd",
-            icon: GraduationCap,
-            badge: cpd.remaining > 0 ? `${cpd.earned}/${cpd.required}` : null,
-            badgeWarn: cpd.remaining > 0,
-            exact: false,
-          },
-          {
-            label: "Partners",
-            href: "/advisor/partners",
-            icon: Network,
-            badge: matchCount > 0 ? String(matchCount) : null,
-            badgeWarn: false,
-            exact: false,
-          },
-          { label: "Settings", href: "/advisor/settings", icon: Settings, badge: null, badgeWarn: false, exact: true },
+          { label: "Dashboard", href: "/advisor", icon: LayoutDashboard, exact: true },
+          { label: "Clients",   href: "/advisor/clients", icon: Users, exact: false },
+          { label: "Learning",  href: "/advisor/cpd", icon: GraduationCap, exact: false },
+          { label: "Partners",  href: "/advisor/partners", icon: Network, exact: false },
+          { label: "Settings",  href: "/advisor/settings", icon: Settings, exact: true },
         ]
       : role === "partner"
-        ? [{ label: "Inbox", href: "/partner", icon: Inbox, badge: null, badgeWarn: false, exact: true }]
-        : [{ label: "Overview", href: "/org", icon: BarChart2, badge: null, badgeWarn: false, exact: true }];
+        ? [{ label: "Inbox",    href: "/partner", icon: Inbox, exact: true }]
+        : [{ label: "Overview", href: "/org", icon: BarChart2, exact: true }];
 
   const persona =
     role === "advisor"
@@ -80,8 +60,6 @@ export function Topbar() {
       : role === "partner"
         ? { name: currentPartner?.name, sub: currentPartner?.specialty, initials: currentPartner?.initials }
         : { name: "Operations", sub: "Org admin", initials: "OP" };
-
-  const trustLabel = role === "org" ? "Anonymised" : role === "partner" ? "Shared fields only" : "Audit trail on";
 
   return (
     <header
@@ -112,19 +90,6 @@ export function Topbar() {
               <Icon className="size-3.5 shrink-0" />
               <span>{item.label}</span>
 
-              {item.badge && (
-                <span
-                  className="rounded px-1.5 py-0.5 text-[10px] font-semibold tabular-nums"
-                  style={
-                    item.badgeWarn
-                      ? { background: "rgba(180,83,9,0.2)", color: "#f59e0b" }
-                      : { background: "rgba(45,212,191,0.12)", color: "#2dd4bf" }
-                  }
-                >
-                  {item.badge}
-                </span>
-              )}
-
               {/* Active underline */}
               {active && (
                 <span
@@ -139,15 +104,6 @@ export function Topbar() {
 
       {/* ── Right actions ─────────────────────────────────────────── */}
       <div className="flex items-center gap-2 pl-4">
-
-        {/* Trust pill */}
-        <span
-          className="hidden items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium lg:inline-flex"
-          style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}
-        >
-          <ShieldCheck className="size-3" />
-          {trustLabel}
-        </span>
 
         {/* Role switcher */}
         <div className="relative">
