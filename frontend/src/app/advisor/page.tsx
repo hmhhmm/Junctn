@@ -24,8 +24,8 @@ import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
 import type { ApiPartnerMatch } from "@/app/api/match/route";
 
 export default function AdvisorDashboard() {
-  const { advisorId, referrals, accessToken, setAccessToken } = useStore();
-  const brief = getMorningBriefing(advisorId, referrals);
+  const { advisorId, referrals, completedModuleIds, accessToken, setAccessToken } = useStore();
+  const brief = getMorningBriefing(advisorId, referrals, completedModuleIds);
   const gaps = getCriticalGaps();
   const topGap = gaps[0];
 

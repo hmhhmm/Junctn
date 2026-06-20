@@ -28,7 +28,7 @@ export const SPECIALTIES = [
 
 export const REGIONS = ["Central", "North", "East", "West"] as const;
 
-export const TODAY = "2026-06-19";
+export const TODAY = new Date().toISOString().slice(0, 10);
 
 // ---------------------------------------------------------------------------
 // Advisors
@@ -633,9 +633,14 @@ export function matchPartners(client: Client): PartnerMatch[] {
 }
 
 // --- getCpdStatus ----------------------------------------------------------
-export function getCpdStatus(advisorId: string) {
+export function getCpdStatus(advisorId: string, completedIds?: string[]) {
   const advisor = getAdvisor(advisorId)!;
-  const earned = advisor.cpdEarned;
+  const isCompleted = (mod: Module) =>
+    completedIds ? completedIds.includes(mod.id) : mod.completedByAdvisor.includes(advisorId);
+
+  const earned = completedIds
+    ? modules.filter(isCompleted).reduce((s, m) => s + m.credits, 0)
+    : advisor.cpdEarned;
   const required = advisor.cpdRequired;
   const pct = Math.min(100, Math.round((earned / required) * 100));
   const daysToDeadline = daysBetween(TODAY, advisor.cpdDeadline);
@@ -651,19 +656,140 @@ export function getCpdStatus(advisorId: string) {
 
   const recommendedModule =
     modules
-      .filter((mod) => mod.topic === topNeed && !mod.completedByAdvisor.includes(advisorId))
+      .filter((mod) => mod.topic === topNeed && !isCompleted(mod))
       .sort((a, b) => b.credits - a.credits)[0] ??
-    modules.find((mod) => mod.required && !mod.completedByAdvisor.includes(advisorId));
+    modules.find((mod) => mod.required && !isCompleted(mod));
 
-  return { earned, required, pct, daysToDeadline, remaining, topNeed, recommendedModule };
+  return { advisor, earned, required, pct, daysToDeadline, remaining, topNeed, recommendedModule };
+}
+
+// --- getCpdCategoryBreakdown -----------------------------------------------
+export function getCpdCategoryBreakdown(advisorId: string, completedIds?: string[]) {
+  const isCompleted = (mod: Module) =>
+    completedIds ? completedIds.includes(mod.id) : mod.completedByAdvisor.includes(advisorId);
+
+  const topicMap = new Map<string, { total: number; earned: number; count: number; done: number }>();
+  for (const mod of modules) {
+    const existing = topicMap.get(mod.topic) ?? { total: 0, earned: 0, count: 0, done: 0 };
+    topicMap.set(mod.topic, {
+      total: existing.total + mod.credits,
+      earned: existing.earned + (isCompleted(mod) ? mod.credits : 0),
+      count: existing.count + 1,
+      done: existing.done + (isCompleted(mod) ? 1 : 0),
+    });
+  }
+  return [...topicMap.entries()].map(([topic, v]) => ({
+    topic,
+    totalCredits: v.total,
+    earnedCredits: v.earned,
+    pct: v.total > 0 ? Math.round((v.earned / v.total) * 100) : 0,
+    moduleCount: v.count,
+    completedCount: v.done,
+  }));
+}
+
+// --- getWeeklyPicks --------------------------------------------------------
+// Reads the advisor's active client needs + note keywords to recommend modules
+// with visible reasoning — "because 3 clients discussed X this week"
+export function getWeeklyPicks(advisorId: string, completedIds?: string[]) {
+  const isCompleted = (mod: Module) =>
+    completedIds ? completedIds.includes(mod.id) : mod.completedByAdvisor.includes(advisorId);
+
+  const topicCounts = new Map<string, { count: number; clientNames: string[] }>();
+  for (const cl of getClientsByAdvisor(advisorId)) {
+    if (cl.status === "dormant") continue;
+    for (const need of cl.needs) {
+      const existing = topicCounts.get(need) ?? { count: 0, clientNames: [] };
+      topicCounts.set(need, {
+        count: existing.count + 1,
+        clientNames: [...existing.clientNames, cl.name.split(" ")[0]],
+      });
+    }
+  }
+
+  const picks: Array<{ module: Module; reason: string }> = [];
+  const sorted = [...topicCounts.entries()].sort((a, b) => b[1].count - a[1].count);
+
+  for (const [topic, { count, clientNames }] of sorted) {
+    const mod = modules
+      .filter((m) => m.topic === topic && !isCompleted(m))
+      .sort((a, b) => b.credits - a.credits)[0];
+    if (!mod) continue;
+    const names = clientNames.slice(0, 2).join(", ");
+    const extra = count > 2 ? ` +${count - 2} more` : "";
+    picks.push({
+      module: mod,
+      reason: `${count} client${count > 1 ? "s" : ""} (${names}${extra}) discussed ${topic} — you haven't completed this module`,
+    });
+    if (picks.length >= 3) break;
+  }
+  return picks;
+}
+
+// --- searchModules ---------------------------------------------------------
+// Keyword ranking over module title + topic. No API required.
+const STOP_WORDS = new Set(["a", "an", "the", "for", "and", "or", "of", "in", "to", "with", "on", "at", "by", "from"]);
+
+export function searchModules(query: string, advisorId: string, completedIds?: string[]) {
+  if (!query.trim()) return [];
+  const isCompleted = (mod: Module) =>
+    completedIds ? completedIds.includes(mod.id) : mod.completedByAdvisor.includes(advisorId);
+
+  const tokens = query
+    .toLowerCase()
+    .split(/\W+/)
+    .filter((t) => t.length > 2 && !STOP_WORDS.has(t));
+
+  if (tokens.length === 0) return [];
+
+  return modules
+    .map((mod) => {
+      const title = mod.title.toLowerCase();
+      const topic = mod.topic.toLowerCase();
+      let score = 0;
+      const matched: string[] = [];
+      for (const tok of tokens) {
+        if (title.includes(tok)) { score += 2; matched.push(tok); }
+        if (topic.includes(tok)) { score += 3; matched.push(tok); }
+      }
+      if (mod.required) score += 1;
+      if (!isCompleted(mod)) score += 2;
+      const uniqueMatched = [...new Set(matched)];
+      const reason = uniqueMatched.length > 0
+        ? `Matches "${uniqueMatched.join(", ")}" · ${mod.credits} credit${mod.credits > 1 ? "s" : ""} · ${mod.required ? "required" : "optional"}`
+        : null;
+      return { module: mod, score, reason, completed: isCompleted(mod) };
+    })
+    .filter((r) => r.score > 0 && r.reason)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+}
+
+// --- getOrgCpdCompliance ---------------------------------------------------
+export function getOrgCpdCompliance(activeAdvisorId?: string, completedIds?: string[]) {
+  return advisors.map((advisor) => {
+    const isActive = activeAdvisorId && advisor.id === activeAdvisorId;
+    const earned = isActive && completedIds != null
+      ? getCpdStatus(advisor.id, completedIds).earned
+      : advisor.cpdEarned;
+    const daysToDeadline = daysBetween(TODAY, advisor.cpdDeadline);
+    const complete = earned >= advisor.cpdRequired;
+    const atRisk = !complete && daysToDeadline <= 14;
+    const status: "complete" | "at_risk" | "on_track" = complete
+      ? "complete"
+      : atRisk
+        ? "at_risk"
+        : "on_track";
+    return { advisor: { ...advisor, cpdEarned: earned }, daysToDeadline, status };
+  });
 }
 
 // --- getMorningBriefing ----------------------------------------------------
-export function getMorningBriefing(advisorId: string, referrals: Referral[]) {
+export function getMorningBriefing(advisorId: string, referrals: Referral[], completedIds?: string[]) {
   const advisor = getAdvisor(advisorId)!;
   const todays = meetings.filter((mt) => mt.advisorId === advisorId);
   const sugs = suggestions.filter((s) => s.advisorId === advisorId);
-  const cpd = getCpdStatus(advisorId);
+  const cpd = getCpdStatus(advisorId, completedIds);
 
   const followups = sugs.filter((s) => s.kind === "followup").length;
   const matchCount = sugs.filter((s) => s.kind === "partner_match").length;
@@ -675,20 +801,20 @@ export function getMorningBriefing(advisorId: string, referrals: Referral[]) {
     `${matchCount} partner introduction${matchCount !== 1 ? "s" : ""} ready to review. ` +
     `You're ${cpd.remaining} CPD credit${cpd.remaining !== 1 ? "s" : ""} short with ${cpd.daysToDeadline} days to your deadline.`;
 
-  const stats = getAdvisorStats(advisorId, referrals);
+  const stats = getAdvisorStats(advisorId, referrals, completedIds);
 
   return { advisor, meetings: todays, suggestions: sugs, cpd, briefingText, stats };
 }
 
 // --- per-advisor stats for the metric row ----------------------------------
-export function getAdvisorStats(advisorId: string, referrals: Referral[]) {
+export function getAdvisorStats(advisorId: string, referrals: Referral[], completedIds?: string[]) {
   const myClients = getClientsByAdvisor(advisorId);
   const activeClients = myClients.filter((c) => c.status !== "dormant").length;
   const myReferrals = referrals.filter((rf) => rf.advisorId === advisorId);
   const openReferrals = myReferrals.filter(
     (rf) => rf.status === "introduced" || rf.status === "in_progress" || rf.status === "suggested",
   ).length;
-  const cpd = getCpdStatus(advisorId);
+  const cpd = getCpdStatus(advisorId, completedIds);
   return { activeClients, openReferrals, cpd };
 }
 

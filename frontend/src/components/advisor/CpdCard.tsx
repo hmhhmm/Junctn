@@ -6,9 +6,11 @@ import { ProgressRing } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCpdStatus } from "@/lib/data";
+import { useStore } from "@/lib/store";
 
 export function CpdCard({ advisorId }: { advisorId: string }) {
-  const cpd = getCpdStatus(advisorId);
+  const { completedModuleIds, completeModule } = useStore();
+  const cpd = getCpdStatus(advisorId, completedModuleIds);
   const urgent = cpd.remaining > 0 && cpd.daysToDeadline <= 14;
   const tone = urgent ? "warn" : cpd.remaining > 0 ? "accent" : "ok";
 
@@ -36,7 +38,7 @@ export function CpdCard({ advisorId }: { advisorId: string }) {
                 : "CPD requirement met "}
             </p>
             <p className="mt-0.5 text-[12px] text-ink-faint">
-              Deadline 30 Jun 2026 · {cpd.daysToDeadline} days away
+              MAS FAA-N13 · {cpd.daysToDeadline} days to deadline
             </p>
           </div>
         </div>
@@ -56,7 +58,12 @@ export function CpdCard({ advisorId }: { advisorId: string }) {
               <span>+{cpd.recommendedModule.credits} credits</span>
               <Badge variant="accent">{cpd.recommendedModule.topic}</Badge>
             </p>
-            <Button variant="secondary" size="sm" className="mt-2.5 w-full">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="mt-2.5 w-full"
+              onClick={() => completeModule(cpd.recommendedModule!.id)}
+            >
               Start module
               <ArrowRight className="size-4" />
             </Button>
