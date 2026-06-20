@@ -286,19 +286,17 @@ export default function AdvisorDashboard() {
       {/* ── Two-column body ─────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px]">
 
-        {/* Left: schedule context */}
+        {/* Left: action first, then context */}
         <div className="flex flex-col gap-5">
+          <AttentionRail items={attentionItems} />
           <div id="calendar">
             <LiveCalendar fallbackMeetings={brief.meetings} />
           </div>
           <LiveGmail maxItems={5} />
         </div>
 
-        {/* Right rail */}
+        {/* Right rail: strategic */}
         <div className="flex flex-col gap-5">
-
-          {/* Attention rail */}
-          <AttentionRail items={attentionItems} />
 
           {/* Partner matches */}
           <Card id="partners">
