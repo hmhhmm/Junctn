@@ -36,6 +36,13 @@ export function useBriefingStream(jobId: string | null): BriefingStreamState {
     const source = new EventSource(getBriefingStreamUrl(jobId));
     sourceRef.current = source;
 
+    // Guard: if no "done" event arrives within 90s, surface an error.
+    const timeout = setTimeout(() => {
+      source.close();
+      setError("Briefing is taking too long — please retry.");
+      setIsDone(true);
+    }, 90_000);
+
     source.addEventListener("token", (e) => {
       const { text } = JSON.parse(e.data);
       setTokens((prev) => prev + text);
@@ -47,11 +54,13 @@ export function useBriefingStream(jobId: string | null): BriefingStreamState {
     });
 
     source.addEventListener("done", () => {
+      clearTimeout(timeout);
       setIsDone(true);
       source.close();
     });
 
     source.addEventListener("error", (e) => {
+      clearTimeout(timeout);
       try {
         const { detail } = JSON.parse((e as MessageEvent).data ?? "{}");
         setError(detail ?? "Briefing unavailable — please refresh");
@@ -63,6 +72,7 @@ export function useBriefingStream(jobId: string | null): BriefingStreamState {
     });
 
     return () => {
+      clearTimeout(timeout);
       source.close();
     };
   }, [jobId]);
