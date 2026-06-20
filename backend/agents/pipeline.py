@@ -11,6 +11,7 @@ class BriefingState(TypedDict):
     client_memory: dict[str, dict]
     followup_list: list[dict]
     gmail_threads: list[dict]
+    real_calendar_events: list[dict]
     synthesised_text: str
     trace_events: list[dict]
     error: Optional[str]

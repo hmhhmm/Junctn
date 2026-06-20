@@ -215,8 +215,32 @@ export default function AdvisorDashboard() {
 
   const streamError = backendError ? "Briefing couldn't load" : null;
 
-  // ── Attention items ─────────────────────────────────────────────────────
+  // ── Real Gmail unread → attention items ────────────────────────────────
+  const [gmailAttention, setGmailAttention] = useState<AttentionItem[]>([]);
+
+  useEffect(() => {
+    fetch("/api/gmail/threads")
+      .then((r) => r.json())
+      .then((d: { threads?: { id: string; subject: string; from: string; unread: boolean; snippet: string }[]; error?: string }) => {
+        if (d.error || !d.threads) return;
+        const unread = d.threads.filter((t) => t.unread);
+        setGmailAttention(
+          unread.map((t) => ({
+            id: `gmail-${t.id}`,
+            kind: "followup" as const,
+            title: t.subject,
+            trigger: `Unread email from ${t.from}`,
+            detail: t.snippet ? t.snippet.slice(0, 100) : undefined,
+            href: "/advisor",
+          })),
+        );
+      })
+      .catch(() => {/* Gmail not connected — silent */});
+  }, [advisorId]);
+
+  // ── Attention items — real Gmail unread first, then seeded CRM ──────────
   const attentionItems: AttentionItem[] = [
+    ...gmailAttention,
     ...brief.suggestions
       .filter((s) => s.kind === "followup")
       .map((s) => {

@@ -20,7 +20,7 @@ genai.configure(api_key=settings.gemini_api_key)
 _model = genai.GenerativeModel("gemini-2.5-flash")
 
 
-def _run_pipeline(job: Job, gmail_threads: list[dict] | None = None) -> None:
+def _run_pipeline(job: Job, gmail_threads: list[dict] | None = None, calendar_events: list[dict] | None = None) -> None:
     job.status = "running"
     update_job(job)
     try:
@@ -31,6 +31,7 @@ def _run_pipeline(job: Job, gmail_threads: list[dict] | None = None) -> None:
             "client_memory": {},
             "followup_list": [],
             "gmail_threads": gmail_threads or [],
+            "real_calendar_events": calendar_events or [],
             "synthesised_text": "",
             "trace_events": [],
             "error": None,
@@ -64,8 +65,9 @@ async def generate_briefing(
     except Exception:
         pass
     gmail_threads: list[dict] = body.get("gmail_threads", [])
+    calendar_events: list[dict] = body.get("calendar_events", [])
     job = create_job(advisor_id)
-    background_tasks.add_task(_run_pipeline, job, gmail_threads)
+    background_tasks.add_task(_run_pipeline, job, gmail_threads, calendar_events)
     return {"job_id": job.id, "status": "pending"}
 
 
