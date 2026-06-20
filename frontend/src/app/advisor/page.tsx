@@ -84,14 +84,17 @@ interface AttentionItem {
 const _DISMISSED_KEY = "attention_dismissed";
 
 function AttentionRail({ items }: { items: AttentionItem[] }) {
-  const [dismissed, setDismissed] = useState<Set<string>>(() => {
-    if (typeof window === "undefined") return new Set();
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+
+  // Restore dismissed IDs from sessionStorage after mount (avoids SSR mismatch)
+  useEffect(() => {
     try {
-      return new Set(JSON.parse(sessionStorage.getItem(_DISMISSED_KEY) ?? "[]"));
+      const stored = JSON.parse(sessionStorage.getItem(_DISMISSED_KEY) ?? "[]");
+      if (stored.length > 0) setDismissed(new Set(stored));
     } catch {
-      return new Set();
+      // ignore
     }
-  });
+  }, []);
 
   function dismiss(id: string, e: React.MouseEvent) {
     e.preventDefault();
@@ -163,9 +166,9 @@ export default function AdvisorDashboard() {
 
   // ── Briefing streaming ──────────────────────────────────────────────────
   const _sessionKey = `briefing_job_${advisorId}`;
-  const [jobId, setJobId] = useState<string | null>(
-    () => typeof window !== "undefined" ? sessionStorage.getItem(_sessionKey) : null,
-  );
+  // Always null on first render so server and client produce identical HTML.
+  // startBriefing (called in useEffect) restores from sessionStorage after mount.
+  const [jobId, setJobId] = useState<string | null>(null);
   const [backendError, setBackendError] = useState(false);
   const { tokens, traceEvents, isDone, error } = useBriefingStream(jobId);
 
