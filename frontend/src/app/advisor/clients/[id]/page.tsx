@@ -29,6 +29,7 @@ import { ReferralStatusBadge } from "@/components/referrals/StatusBadge";
 import { RelationshipCard } from "@/components/advisor/RelationshipCard";
 import { EvidenceRail } from "@/components/advisor/EvidenceRail";
 import { ClientAdvisorBot } from "@/components/advisor/ClientAdvisorBot";
+import { TopicDetector } from "@/components/advisor/TopicDetector";
 import type { ApiPartnerMatch } from "@/app/api/match/route";
 
 const channelIcon = {
@@ -302,6 +303,13 @@ function ClientPageInner({
           {/* Tab: Partners — memory + suggested matches */}
           {railTab === "partners" && (
             <div className="flex flex-col gap-4">
+
+              {/* Live topic detector */}
+              <TopicDetector
+                clientId={client.id}
+                clientName={client.name}
+                advisorRegion={advisor.district}
+              />
 
               {/* Suggested partners */}
               <Card>
