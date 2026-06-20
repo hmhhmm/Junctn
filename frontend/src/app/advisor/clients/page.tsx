@@ -137,9 +137,9 @@ export default function ClientsPage() {
                 {/* Name */}
                 <p className="mt-3 truncate text-[15px] font-semibold text-ink">{client.name}</p>
 
-                {/* Needs */}
-                <div className="mt-2 flex min-h-[22px] flex-wrap gap-1">
-                  {client.needs.slice(0, 2).map((n) => (
+                {/* Needs — flex-1 pushes footer to bottom */}
+                <div className="mt-2 flex flex-1 flex-wrap content-start gap-1">
+                  {client.needs.slice(0, 3).map((n) => (
                     <span
                       key={n}
                       className="rounded-md px-2 py-0.5 text-[10px] font-medium"
@@ -148,13 +148,13 @@ export default function ClientsPage() {
                       {n}
                     </span>
                   ))}
-                  {client.needs.length > 2 && (
-                    <span className="self-center text-[10px] text-ink-faint">+{client.needs.length - 2}</span>
+                  {client.needs.length > 3 && (
+                    <span className="self-center text-[10px] text-ink-faint">+{client.needs.length - 3}</span>
                   )}
                 </div>
 
                 {/* Footer: AUM + last contact */}
-                <div className="mt-3 flex items-end justify-between border-t border-line pt-3">
+                <div className="mt-4 flex items-end justify-between border-t border-line pt-3">
                   <div>
                     <p className="font-display text-[18px] font-bold leading-none text-ink">
                       S${(client.aum / 1_000_000).toFixed(1)}M

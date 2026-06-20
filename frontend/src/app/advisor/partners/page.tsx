@@ -7,18 +7,21 @@ import { partners, getClientsByAdvisor, SPECIALTIES, REGIONS } from "@/lib/data"
 import { Avatar } from "@/components/ui/avatar";
 import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
 import { Button } from "@/components/ui/button";
-import type { ApiPartnerMatch } from "@/app/api/match/route";
+import type { ApiPartnerMatch } from "@/lib/types";
 
 export default function PartnersPage() {
-  const { advisorId } = useStore();
-  const myClients     = getClientsByAdvisor(advisorId).filter((c) => c.status !== "dormant");
-  const topClient     = myClients[0] ?? null;
+  const { advisorId, matchCache, setMatchCache } = useStore();
+  const myClients = getClientsByAdvisor(advisorId).filter((c) => c.status !== "dormant");
+  const topClient = myClients[0] ?? null;
 
-  // AI recommendations
-  const [recommended, setRecommended] = useState<ApiPartnerMatch[]>([]);
-  const [loading, setLoading]         = useState(true);
+  // AI recommendations — read from cache if available
+  const cached = matchCache[advisorId];
+  const [recommended, setRecommended] = useState<ApiPartnerMatch[]>(cached ?? []);
+  const [loading, setLoading]         = useState(!cached);
 
   useEffect(() => {
+    if (matchCache[advisorId]) return; // already cached
+
     const query = myClients.flatMap((c) => c.needs).slice(0, 10).join(", ")
       || "estate planning investments retirement tax";
 
@@ -28,7 +31,11 @@ export default function PartnersPage() {
       body: JSON.stringify({ query, top_k: 3 }),
     })
       .then((r) => r.json())
-      .then((d) => setRecommended(d.matches ?? []))
+      .then((d) => {
+        const matches = d.matches ?? [];
+        setRecommended(matches);
+        setMatchCache(advisorId, matches);
+      })
       .catch(() => setRecommended([]))
       .finally(() => setLoading(false));
   }, [advisorId]); // eslint-disable-line react-hooks/exhaustive-deps

@@ -17,13 +17,16 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { getClient, getPartner, getAdvisor } from "@/lib/data";
+import { getClient, getPartner, getAdvisor, getNewsForClient } from "@/lib/data";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
 import { ReferralStatusBadge } from "@/components/referrals/StatusBadge";
+import { RelationshipCard } from "@/components/advisor/RelationshipCard";
+import { EvidenceRail } from "@/components/advisor/EvidenceRail";
+import { ClientAdvisorBot } from "@/components/advisor/ClientAdvisorBot";
 import type { ApiPartnerMatch } from "@/app/api/match/route";
 
 const channelIcon = {
@@ -72,6 +75,7 @@ function ClientPageInner({
 }) {
   const [matches, setMatches] = useState<ApiPartnerMatch[]>([]);
   const [matchLoading, setMatchLoading] = useState(true);
+  const newsItems = getNewsForClient(client);
 
   useEffect(() => {
     // Build a rich query from client needs + note summaries
@@ -220,8 +224,12 @@ function ClientPageInner({
           </Card>
         </div>
 
-        {/* Right: AI memory + live partner matches */}
+        {/* Right: relationship intelligence + AI memory + partner matches */}
         <div className="flex flex-col gap-5">
+          <RelationshipCard client={client} />
+
+          <EvidenceRail items={newsItems} clientName={client.name} />
+
           <Card className="border-accent/30">
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5">
@@ -311,6 +319,9 @@ function ClientPageInner({
           </Card>
         </div>
       </div>
+
+      {/* Floating AI advisor bot */}
+      <ClientAdvisorBot client={client} />
     </div>
   );
 }

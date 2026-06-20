@@ -3,17 +3,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Users, Network, GraduationCap, AlertTriangle,
+  Network, Flame,
   MessageSquareWarning, FileWarning, ShieldCheck, ChevronRight,
   Sparkles, RefreshCw, ArrowRight,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { getMorningBriefing, getCriticalGaps, getClient } from "@/lib/data";
+import { getMorningBriefing, getCriticalGaps, getClient, getClientsByAdvisor, getWarmQueue } from "@/lib/data";
 import { login, generateBriefing } from "@/lib/api";
 import { useBriefingStream } from "@/hooks/useBriefingStream";
 import { BriefingBand } from "@/components/advisor/BriefingBand";
 import { AgentTracePanel } from "@/components/advisor/AgentTracePanel";
-import { MetricCard } from "@/components/advisor/MetricCard";
+import { PerformanceStack } from "@/components/advisor/PerformanceStack";
 import { LiveCalendar } from "@/components/advisor/LiveCalendar";
 import { LiveGmail } from "@/components/advisor/LiveGmail";
 import { CpdCard } from "@/components/advisor/CpdCard";
@@ -21,24 +21,46 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
-import type { ApiPartnerMatch } from "@/app/api/match/route";
+import type { ApiPartnerMatch } from "@/lib/types";
 
 export default function AdvisorDashboard() {
-  const { advisorId, referrals, completedModuleIds, accessToken, setAccessToken } = useStore();
+  const {
+    advisorId, referrals, completedModuleIds, accessToken, setAccessToken,
+    matchCache, setMatchCache, briefingCache, setBriefingCache,
+  } = useStore();
   const brief = getMorningBriefing(advisorId, referrals, completedModuleIds);
   const gaps = getCriticalGaps();
   const topGap = gaps[0];
+  const myClients = getClientsByAdvisor(advisorId);
+  const totalAum = myClients.reduce((sum, c) => sum + (c.aum ?? 0), 0);
+  const warmQueue = getWarmQueue(advisorId);
 
   const attention = brief.suggestions.filter((s) => s.kind === "followup");
   const missingMeetings = brief.meetings.filter((m) => m.flag?.kind === "missing");
 
   // ── Briefing streaming ──────────────────────────────────────────────────────
+  const cachedBriefing = briefingCache[advisorId] ?? null;
+
   const [jobId, setJobId] = useState<string | null>(null);
   const [backendError, setBackendError] = useState(false);
 
-  const { tokens, traceEvents, isDone, error } = useBriefingStream(jobId);
+  const { tokens: streamTokens, traceEvents: streamTrace, isDone, error } = useBriefingStream(jobId);
+
+  // Use cached result if available, otherwise use live stream
+  const tokens      = cachedBriefing ? cachedBriefing.text       : streamTokens;
+  const traceEvents = cachedBriefing ? cachedBriefing.traceEvents : streamTrace;
+
+  // Save to cache once the stream finishes
+  useEffect(() => {
+    if (isDone && streamTokens && !cachedBriefing) {
+      setBriefingCache(advisorId, { text: streamTokens, traceEvents: streamTrace });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDone]);
 
   useEffect(() => {
+    if (cachedBriefing) return; // skip — already have the result
+
     let cancelled = false;
 
     async function init() {
@@ -71,10 +93,13 @@ export default function AdvisorDashboard() {
     : error;
 
   // ── Live partner matches from embedding search ──────────────────────────────
-  const [matches, setMatches] = useState<ApiPartnerMatch[]>([]);
-  const [matchLoading, setMatchLoading] = useState(true);
+  const cachedMatches = matchCache[advisorId];
+  const [matches, setMatches] = useState<ApiPartnerMatch[]>(cachedMatches ?? []);
+  const [matchLoading, setMatchLoading] = useState(!cachedMatches);
 
   useEffect(() => {
+    if (matchCache[advisorId]) return; // already cached
+
     const topicHints = brief.suggestions
       .filter((s) => s.kind === "partner_match")
       .map((s) => s.trigger)
@@ -88,7 +113,11 @@ export default function AdvisorDashboard() {
       body: JSON.stringify({ query, top_k: 3, advisor_region: brief.advisor?.district }),
     })
       .then((r) => r.json())
-      .then((d) => setMatches(d.matches ?? []))
+      .then((d) => {
+        const m = d.matches ?? [];
+        setMatches(m);
+        setMatchCache(advisorId, m);
+      })
       .catch(() => setMatches([]))
       .finally(() => setMatchLoading(false));
   }, [advisorId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -112,19 +141,17 @@ export default function AdvisorDashboard() {
         advisorId={advisorId}
       />
 
-      {/* Metric row */}
-      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <MetricCard label="Active clients" value={brief.stats.activeClients}
-          hint="In your book this quarter" icon={Users} />
-        <MetricCard label="Open referrals" value={brief.stats.openReferrals}
-          hint="Suggested, introduced or in progress" icon={Network} tone="accent" />
-        <MetricCard label="CPD this quarter" value={`${brief.cpd.earned}/${brief.cpd.required}`}
-          icon={GraduationCap} tone={brief.cpd.remaining > 0 ? "warn" : "neutral"}
-          progress={brief.cpd.pct} progressTone={brief.cpd.remaining > 0 ? "warn" : "ok"}
-          hint={`${brief.cpd.daysToDeadline} days to deadline`} />
-        <MetricCard label="Ecosystem gap" value={topGap ? topGap.specialty : "None"}
-          hint={topGap ? `No partner in ${topGap.region} · ${topGap.demand} clients affected` : "Full coverage"}
-          icon={AlertTriangle} tone="alert" />
+      {/* Performance stack */}
+      <div className="mt-4">
+        <PerformanceStack
+          advisorName={brief.advisor?.name ?? ""}
+          totalClients={brief.stats.activeClients}
+          totalAum={totalAum}
+          referrals={referrals}
+          cpdEarned={brief.cpd.earned}
+          cpdRequired={brief.cpd.required}
+          cpdDaysLeft={brief.cpd.daysToDeadline}
+        />
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_340px]">
@@ -249,6 +276,42 @@ export default function AdvisorDashboard() {
               )}
             </CardContent>
           </Card>
+          {/* Warm-the-book queue */}
+          {warmQueue.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-1.5">
+                  <Flame className="size-4 text-amber-400" />
+                  Warm the book
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2 pt-0">
+                <p className="mb-1 text-[11px] text-ink-faint">
+                  Clients you haven&apos;t reached personally in a while — a quick check-in goes a long way.
+                </p>
+                {warmQueue.map((client) => {
+                  const days = client.profile?.lastPersonalTouch
+                    ? Math.floor((Date.now() - new Date(client.profile.lastPersonalTouch).getTime()) / 86_400_000)
+                    : Math.floor((Date.now() - new Date(client.lastContact).getTime()) / 86_400_000);
+                  return (
+                    <Link
+                      key={client.id}
+                      href={`/advisor/clients/${client.id}`}
+                      className="group flex items-center gap-3 rounded-lg border border-line p-3 transition-colors hover:bg-surface-hover"
+                    >
+                      <Avatar initials={client.initials} size="sm" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13px] font-medium text-ink">{client.name}</p>
+                        <p className="text-[11px] text-ink-faint">{days}d since last touch</p>
+                      </div>
+                      <ChevronRight className="size-4 shrink-0 text-ink-faint transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          )}
+
           <div className="flex flex-1 flex-col">
             <CpdCard advisorId={advisorId} />
           </div>
