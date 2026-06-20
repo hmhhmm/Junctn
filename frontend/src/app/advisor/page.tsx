@@ -368,7 +368,7 @@ export default function AdvisorDashboard() {
                           partnerId={m.id}
                           reason={m.reason}
                           trigger={
-                            <button className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-lg border border-line bg-surface-raised px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:bg-surface-hover">
+                            <button className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:opacity-90" style={{ background: "#0f766e" }}>
                               Introduce {matchClient.name.split(" ")[0]}
                               <ArrowRight className="size-3.5" aria-hidden="true" />
                             </button>
