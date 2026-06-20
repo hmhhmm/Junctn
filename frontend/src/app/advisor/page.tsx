@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import {
   Network, MessageSquareWarning, FileWarning, ShieldCheck,
-  ChevronRight, ArrowRight,
+  ChevronRight, ArrowRight, X,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { getMorningBriefing, getCriticalGaps, getClient } from "@/lib/data";
@@ -81,8 +81,28 @@ interface AttentionItem {
   href: string;
 }
 
+const _DISMISSED_KEY = "attention_dismissed";
+
 function AttentionRail({ items }: { items: AttentionItem[] }) {
-  if (items.length === 0) return null;
+  const [dismissed, setDismissed] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    try {
+      return new Set(JSON.parse(sessionStorage.getItem(_DISMISSED_KEY) ?? "[]"));
+    } catch {
+      return new Set();
+    }
+  });
+
+  function dismiss(id: string, e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const next = new Set(dismissed).add(id);
+    setDismissed(next);
+    sessionStorage.setItem(_DISMISSED_KEY, JSON.stringify([...next]));
+  }
+
+  const visible = items.filter((i) => !dismissed.has(i.id));
+  if (visible.length === 0) return null;
 
   return (
     <div id="followups" className="overflow-hidden rounded-xl border border-line bg-surface">
@@ -90,15 +110,15 @@ function AttentionRail({ items }: { items: AttentionItem[] }) {
         <MessageSquareWarning className="size-4 text-alert" aria-hidden="true" />
         <h2 className="text-[13px] font-semibold text-ink">Needs your attention</h2>
         <span className="flex size-5 items-center justify-center rounded-full bg-alert-soft text-[10px] font-bold text-alert">
-          {items.length}
+          {visible.length}
         </span>
       </div>
       <ul className="divide-y divide-line">
-        {items.map((item) => (
-          <li key={item.id}>
+        {visible.map((item) => (
+          <li key={item.id} className="group/item relative">
             <Link
               href={item.href}
-              className="group flex items-start gap-3 px-4 py-3 transition-colors hover:bg-surface-hover"
+              className="group flex items-start gap-3 px-4 py-3 pr-10 transition-colors hover:bg-surface-hover"
             >
               <span
                 className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md"
@@ -119,6 +139,13 @@ function AttentionRail({ items }: { items: AttentionItem[] }) {
               </div>
               <ChevronRight className="mt-1 size-4 shrink-0 text-ink-faint transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
             </Link>
+            <button
+              onClick={(e) => dismiss(item.id, e)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-ink-faint opacity-0 transition-opacity hover:text-ink group-hover/item:opacity-100 focus-visible:opacity-100"
+              aria-label={`Dismiss: ${item.title}`}
+            >
+              <X className="size-3.5" />
+            </button>
           </li>
         ))}
       </ul>
