@@ -15,6 +15,8 @@ import {
   ShieldCheck,
   RefreshCw,
   Clock,
+  Heart,
+  Newspaper,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { getClient, getPartner, getAdvisor, getNewsForClient } from "@/lib/data";
@@ -84,6 +86,7 @@ function ClientPageInner({
   const [matches, setMatches]       = useState<ApiPartnerMatch[]>([]);
   const [matchLoading, setMatchLoading] = useState(true);
   const [botOpen, setBotOpen]       = useState(false);
+  const [railTab, setRailTab]       = useState<"relationship" | "news" | "partners">("relationship");
   const newsItems = getNewsForClient(client);
   const isStale   = Date.now() - new Date(client.lastContact).getTime() > 30 * 86_400_000;
 
@@ -254,90 +257,132 @@ function ClientPageInner({
           </Card>
         </div>
 
-        {/* Right rail: relationship + evidence + memory + partners */}
-        <div className="flex flex-col gap-5">
+        {/* Right rail — tabbed intelligence panel */}
+        <div className="flex flex-col gap-0">
 
-          <RelationshipCard client={client} />
+          {/* Tab strip */}
+          <div className="mb-3 flex rounded-xl border border-line bg-surface p-1 shadow-sm">
+            {(
+              [
+                { key: "relationship", label: "Relationship", Icon: Heart },
+                { key: "news",         label: "News",         Icon: Newspaper },
+                { key: "partners",     label: "Partners",     Icon: Network },
+              ] as const
+            ).map(({ key, label, Icon }) => (
+              <button
+                key={key}
+                onClick={() => setRailTab(key)}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-[12px] font-medium transition-colors"
+                style={railTab === key
+                  ? { background: "var(--surface-raised)", color: "var(--ink)" }
+                  : { color: "var(--ink-faint)" }}
+              >
+                <Icon className="size-3.5" />
+                {label}
+              </button>
+            ))}
+          </div>
 
-          <EvidenceRail items={newsItems} clientName={client.name} />
+          {/* Tab: Relationship */}
+          {railTab === "relationship" && (
+            <RelationshipCard client={client} />
+          )}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Client memory</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <ul className="flex flex-col gap-2.5">
-                {sources.map((s) => (
-                  <li key={s.id} className="flex gap-2.5">
-                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-ink-faint" />
-                    <div>
-                      <p className="text-[13px] text-ink">{s.summary}</p>
-                      <p className="mt-0.5 text-[11px] text-ink-faint">
-                        {s.channel} · {s.date}
+          {/* Tab: News / evidence */}
+          {railTab === "news" && (
+            newsItems.length === 0 ? (
+              <div className="rounded-xl border border-line bg-surface px-5 py-10 text-center text-[13px] text-ink-faint">
+                No relevant news found for this client.
+              </div>
+            ) : (
+              <EvidenceRail items={newsItems} clientName={client.name} />
+            )
+          )}
+
+          {/* Tab: Partners — memory + suggested matches */}
+          {railTab === "partners" && (
+            <div className="flex flex-col gap-4">
+
+              {/* Suggested partners */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-1.5">
+                    <Network className="size-4 text-ink-soft" />
+                    Suggested partners
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3 pt-0">
+                  {matchLoading ? (
+                    <div className="flex items-center gap-2 py-2 text-[13px] text-ink-faint">
+                      <RefreshCw className="size-4 animate-spin" /> Finding best matches…
+                    </div>
+                  ) : matches.length === 0 ? (
+                    <p className="text-[13px] text-ink-faint">No strong matches found.</p>
+                  ) : (
+                    matches.map((m) => (
+                      <div key={m.id} className="rounded-md border border-line p-3">
+                        <div className="flex items-center gap-2.5">
+                          <Avatar initials={m.initials} size="sm" />
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[13px] font-semibold text-ink">{m.name}</p>
+                            <p className="text-[11px] text-ink-faint">{m.specialty} · {m.region}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-display text-[16px] font-bold leading-none text-accent-ink">{m.score}</p>
+                            <p className="text-[10px] text-ink-faint">match</p>
+                          </div>
+                        </div>
+                        <p className="mt-2 rounded bg-surface-raised px-2 py-1.5 text-[11px] text-ink-soft">
+                          {m.reason}
+                        </p>
+                        <IntroduceDialog
+                          clientId={client.id}
+                          partnerId={m.id}
+                          reason={m.reason}
+                          trigger={
+                            <Button variant="soft" size="sm" className="mt-2.5 w-full">
+                              Introduce {client.name.split(" ")[0]}
+                              <ArrowRight className="size-4" />
+                            </Button>
+                          }
+                        />
+                      </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Client memory */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Client memory</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <ul className="flex flex-col gap-2.5">
+                    {sources.map((s) => (
+                      <li key={s.id} className="flex gap-2.5">
+                        <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-ink-faint" />
+                        <div>
+                          <p className="text-[13px] text-ink">{s.summary}</p>
+                          <p className="mt-0.5 text-[11px] text-ink-faint">{s.channel} · {s.date}</p>
+                        </div>
+                      </li>
+                    ))}
+                    {sources.length === 0 && (
+                      <p className="text-[13px] text-ink-faint">
+                        No memory yet — captured notes will surface here with their source.
                       </p>
-                    </div>
-                  </li>
-                ))}
-                {sources.length === 0 && (
-                  <p className="text-[13px] text-ink-faint">
-                    No memory yet — captured notes will surface here with their source.
+                    )}
+                  </ul>
+                  <p className="mt-3 flex items-center gap-1.5 border-t border-line pt-3 text-[11px] text-ink-faint">
+                    <ShieldCheck className="size-3.5 text-ok" />
+                    Summarised from your own logged notes — every line cites its source.
                   </p>
-                )}
-              </ul>
-              <p className="mt-3 flex items-center gap-1.5 border-t border-line pt-3 text-[11px] text-ink-faint">
-                <ShieldCheck className="size-3.5 text-ok" />
-                Summarised from your own logged notes — every line cites its source.
-              </p>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-1.5">
-                <Network className="size-4 text-ink-soft" />
-                Suggested partners
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 pt-0">
-              {matchLoading ? (
-                <div className="flex items-center gap-2 py-2 text-[13px] text-ink-faint">
-                  <RefreshCw className="size-4 animate-spin" /> Finding best matches…
-                </div>
-              ) : matches.length === 0 ? (
-                <p className="text-[13px] text-ink-faint">No strong matches found.</p>
-              ) : (
-                matches.map((m) => (
-                  <div key={m.id} className="rounded-md border border-line p-3">
-                    <div className="flex items-center gap-2.5">
-                      <Avatar initials={m.initials} size="sm" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13px] font-semibold text-ink">{m.name}</p>
-                        <p className="text-[11px] text-ink-faint">{m.specialty} · {m.region}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-display text-[16px] font-bold leading-none text-accent-ink">{m.score}</p>
-                        <p className="text-[10px] text-ink-faint">match</p>
-                      </div>
-                    </div>
-                    <p className="mt-2 rounded bg-surface-raised px-2 py-1.5 text-[11px] text-ink-soft">
-                      {m.reason}
-                    </p>
-                    <IntroduceDialog
-                      clientId={client.id}
-                      partnerId={m.id}
-                      reason={m.reason}
-                      trigger={
-                        <Button variant="soft" size="sm" className="mt-2.5 w-full">
-                          Introduce {client.name.split(" ")[0]}
-                          <ArrowRight className="size-4" />
-                        </Button>
-                      }
-                    />
-                  </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
+            </div>
+          )}
         </div>
       </div>
 
