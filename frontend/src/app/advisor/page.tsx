@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Users,
@@ -10,6 +11,9 @@ import {
   FileWarning,
   ShieldCheck,
   ChevronRight,
+  Sparkles,
+  RefreshCw,
+  ArrowRight,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { getMorningBriefing, getCriticalGaps, getClient } from "@/lib/data";
@@ -17,9 +21,12 @@ import { BriefingBand } from "@/components/advisor/BriefingBand";
 import { MetricCard } from "@/components/advisor/MetricCard";
 import { LiveCalendar } from "@/components/advisor/LiveCalendar";
 import { LiveGmail } from "@/components/advisor/LiveGmail";
-import { PartnerMatchCard } from "@/components/advisor/PartnerMatchCard";
 import { CpdCard } from "@/components/advisor/CpdCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
+import type { ApiPartnerMatch } from "@/app/api/match/route";
 
 export default function AdvisorDashboard() {
   const { advisorId, referrals } = useStore();
@@ -27,9 +34,41 @@ export default function AdvisorDashboard() {
   const gaps = getCriticalGaps();
   const topGap = gaps[0];
 
-  const matches = brief.suggestions.filter((s) => s.kind === "partner_match");
   const attention = brief.suggestions.filter((s) => s.kind === "followup");
   const missingMeetings = brief.meetings.filter((m) => m.flag?.kind === "missing");
+
+  // Live partner matches from ChromaDB via backend
+  const [matches, setMatches] = useState<ApiPartnerMatch[]>([]);
+  const [matchLoading, setMatchLoading] = useState(true);
+
+  useEffect(() => {
+    // Use needs from clients flagged in suggestions as the query signal
+    const topicHints = brief.suggestions
+      .filter((s) => s.kind === "partner_match")
+      .map((s) => s.trigger)
+      .join(". ");
+
+    const query = topicHints || "estate planning trust retirement investments tax mortgage";
+
+    fetch("/api/match", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, top_k: 3, advisor_region: brief.advisor?.district }),
+    })
+      .then((r) => r.json())
+      .then((d) => setMatches(d.matches ?? []))
+      .catch(() => setMatches([]))
+      .finally(() => setMatchLoading(false));
+  }, [advisorId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Find a client to associate with each match (first client flagged in partner suggestions)
+  function getMatchClient() {
+    const clients = brief.suggestions
+      .filter((s) => s.kind === "partner_match" && s.payload.clientId)
+      .map((s) => getClient(s.payload.clientId!))
+      .filter(Boolean);
+    return clients[0] ?? null;
+  }
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-6">
@@ -106,18 +145,73 @@ export default function AdvisorDashboard() {
           <LiveGmail maxItems={5} />
         </div>
 
-        {/* ── Right rail: partner intel + progress ─────────────────────── */}
+        {/* ── Right rail: live partner matches + CPD ───────────────────── */}
         <div className="flex flex-col gap-5">
           <Card id="partners">
             <CardHeader className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-1.5">
                 <Network className="size-4 text-ink-soft" />
                 Partner matches
+                {!matchLoading && (
+                  <span className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+                        style={{ background: "var(--ok-soft)", color: "var(--ok)" }}>
+                    <Sparkles className="size-2.5" /> AI
+                  </span>
+                )}
               </CardTitle>
-              <span className="text-[11px] text-ink-faint">{matches.length} ready</span>
+              {!matchLoading && (
+                <span className="text-[11px] text-ink-faint">{matches.length} ready</span>
+              )}
             </CardHeader>
             <CardContent className="flex flex-col gap-3 pt-0">
-              {matches.map((s) => <PartnerMatchCard key={s.id} suggestion={s} />)}
+              {matchLoading ? (
+                <div className="flex items-center gap-2 py-2 text-[13px] text-ink-faint">
+                  <RefreshCw className="size-4 animate-spin" /> Matching…
+                </div>
+              ) : matches.length === 0 ? (
+                <p className="text-[13px] text-ink-faint">No matches at this time.</p>
+              ) : (
+                matches.map((m) => {
+                  const matchClient = getMatchClient();
+                  return (
+                    <div key={m.id} className="rounded-md border border-line p-3.5">
+                      <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-medium text-accent-ink">
+                        <Sparkles className="size-3" />
+                        {m.reason}
+                      </p>
+                      <div className="flex items-center gap-2.5">
+                        <Avatar initials={m.initials} size="md" />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13px] font-semibold text-ink">{m.name}</p>
+                          <p className="text-[11px] text-ink-faint">{m.specialty} · {m.region}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-display text-[18px] font-bold leading-none text-accent-ink">{m.score}</p>
+                          <p className="text-[10px] uppercase tracking-wide text-ink-faint">match</p>
+                        </div>
+                      </div>
+                      {matchClient ? (
+                        <IntroduceDialog
+                          clientId={matchClient.id}
+                          partnerId={m.id}
+                          reason={m.reason}
+                          trigger={
+                            <Button variant="soft" size="sm" className="mt-2.5 w-full">
+                              Introduce {matchClient.name.split(" ")[0]}
+                              <ArrowRight className="size-4" />
+                            </Button>
+                          }
+                        />
+                      ) : (
+                        <Link href="/advisor/clients"
+                          className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[12px] font-medium text-ink-soft hover:bg-surface-hover">
+                          View clients <ArrowRight className="size-3.5" />
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })
+              )}
             </CardContent>
           </Card>
 

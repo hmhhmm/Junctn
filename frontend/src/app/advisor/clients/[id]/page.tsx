@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -13,20 +14,17 @@ import {
   StickyNote,
   ArrowRight,
   ShieldCheck,
+  RefreshCw,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import {
-  getClient,
-  getPartner,
-  matchPartners,
-  getAdvisor,
-} from "@/lib/data";
+import { getClient, getPartner, getAdvisor } from "@/lib/data";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IntroduceDialog } from "@/components/advisor/IntroduceDialog";
 import { ReferralStatusBadge } from "@/components/referrals/StatusBadge";
+import type { ApiPartnerMatch } from "@/app/api/match/route";
 
 const channelIcon = {
   Meeting: UsersIcon,
@@ -44,10 +42,54 @@ export default function ClientPage({ params }: { params: { id: string } }) {
 
   const advisor = getAdvisor(client.advisorId)!;
   const openReferrals = referrals.filter((r) => r.clientId === id);
-  const matches = matchPartners(client).slice(0, 2);
   const sources = client.notes.filter((n) => n.source);
-
   const fmtAum = `S$${(client.aum / 1_000_000).toFixed(2)}M`;
+
+  return (
+    <ClientPageInner
+      client={client}
+      advisor={advisor}
+      openReferrals={openReferrals}
+      sources={sources}
+      fmtAum={fmtAum}
+    />
+  );
+}
+
+// Inner component so we can use hooks freely (notFound() must be called before hooks)
+function ClientPageInner({
+  client,
+  advisor,
+  openReferrals,
+  sources,
+  fmtAum,
+}: {
+  client: NonNullable<ReturnType<typeof getClient>>;
+  advisor: NonNullable<ReturnType<typeof getAdvisor>>;
+  openReferrals: ReturnType<typeof useStore>["referrals"];
+  sources: NonNullable<ReturnType<typeof getClient>>["notes"];
+  fmtAum: string;
+}) {
+  const [matches, setMatches] = useState<ApiPartnerMatch[]>([]);
+  const [matchLoading, setMatchLoading] = useState(true);
+
+  useEffect(() => {
+    // Build a rich query from client needs + note summaries
+    const query = [
+      ...client.needs,
+      ...client.notes.map((n) => n.summary),
+    ].join(". ");
+
+    fetch("/api/match", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, top_k: 2, advisor_region: advisor.district }),
+    })
+      .then((r) => r.json())
+      .then((d) => setMatches(d.matches ?? []))
+      .catch(() => setMatches([]))
+      .finally(() => setMatchLoading(false));
+  }, [client.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-6">
@@ -178,7 +220,7 @@ export default function ClientPage({ params }: { params: { id: string } }) {
           </Card>
         </div>
 
-        {/* Right: AI memory + matches */}
+        {/* Right: AI memory + live partner matches */}
         <div className="flex flex-col gap-5">
           <Card className="border-accent/30">
             <CardHeader>
@@ -213,36 +255,47 @@ export default function ClientPage({ params }: { params: { id: string } }) {
             </CardContent>
           </Card>
 
-          {/* Suggested matches */}
-          {matches.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-1.5">
-                  <Network className="size-4 text-ink-soft" />
-                  Suggested partners
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-3 pt-0">
-                {matches.map((m) => (
-                  <div key={m.partner.id} className="rounded-md border border-line p-3">
+          {/* Live AI partner matches from ChromaDB */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-1.5">
+                <Network className="size-4 text-ink-soft" />
+                Suggested partners
+                {!matchLoading && (
+                  <span className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+                        style={{ background: "var(--ok-soft)", color: "var(--ok)" }}>
+                    <Sparkles className="size-2.5" /> AI matched
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3 pt-0">
+              {matchLoading ? (
+                <div className="flex items-center gap-2 py-2 text-[13px] text-ink-faint">
+                  <RefreshCw className="size-4 animate-spin" /> Finding best matches…
+                </div>
+              ) : matches.length === 0 ? (
+                <p className="text-[13px] text-ink-faint">No strong matches found.</p>
+              ) : (
+                matches.map((m) => (
+                  <div key={m.id} className="rounded-md border border-line p-3">
                     <div className="flex items-center gap-2.5">
-                      <Avatar initials={m.partner.initials} size="sm" />
+                      <Avatar initials={m.initials} size="sm" />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13px] font-semibold text-ink">
-                          {m.partner.name}
-                        </p>
-                        <p className="text-[11px] text-ink-faint">{m.partner.specialty}</p>
+                        <p className="truncate text-[13px] font-semibold text-ink">{m.name}</p>
+                        <p className="text-[11px] text-ink-faint">{m.specialty} · {m.region}</p>
                       </div>
-                      <span className="font-display text-[16px] font-bold text-accent-ink">
-                        {m.score}
-                      </span>
+                      <div className="text-right">
+                        <p className="font-display text-[16px] font-bold leading-none text-accent-ink">{m.score}</p>
+                        <p className="text-[10px] uppercase tracking-wide text-ink-faint">match</p>
+                      </div>
                     </div>
                     <p className="mt-2 rounded bg-surface-raised px-2 py-1.5 text-[11px] text-ink-soft">
                       {m.reason}
                     </p>
                     <IntroduceDialog
                       clientId={client.id}
-                      partnerId={m.partner.id}
+                      partnerId={m.id}
                       reason={m.reason}
                       trigger={
                         <Button variant="soft" size="sm" className="mt-2.5 w-full">
@@ -252,10 +305,10 @@ export default function ClientPage({ params }: { params: { id: string } }) {
                       }
                     />
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+                ))
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
