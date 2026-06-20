@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 import google.generativeai as genai
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
-from sse_starlette.sse import EventSourceResponse
+from starlette.responses import StreamingResponse
 
 from backend.agents.pipeline import BriefingState, build_briefing_graph
 from backend.config import settings
@@ -58,10 +58,13 @@ async def generate_briefing(
 
 
 @router.get("/stream/{job_id}")
-async def stream_briefing(job_id: str) -> EventSourceResponse:
+async def stream_briefing(job_id: str) -> StreamingResponse:
     job = get_job(job_id)
     if not job:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+
+    def _format_event(event: str, data: str) -> str:
+        return f"event: {event}\ndata: {data}\n\n"
 
     async def generator():
         sent_traces = 0
@@ -70,37 +73,25 @@ async def stream_briefing(job_id: str) -> EventSourceResponse:
         while True:
             # Yield any new trace events
             while sent_traces < len(job.trace_events):
-                yield {
-                    "event": "trace",
-                    "data": json.dumps(job.trace_events[sent_traces]),
-                }
+                yield _format_event("trace", json.dumps(job.trace_events[sent_traces]))
                 sent_traces += 1
 
             # Yield any new tokens
             while sent_tokens < len(job.tokens):
-                yield {
-                    "event": "token",
-                    "data": json.dumps({"text": job.tokens[sent_tokens]}),
-                }
+                yield _format_event("token", json.dumps({"text": job.tokens[sent_tokens]}))
                 sent_tokens += 1
 
             if job.status == "complete":
-                yield {
-                    "event": "done",
-                    "data": json.dumps({"full_text": job.full_text}),
-                }
+                yield _format_event("done", json.dumps({"full_text": job.full_text}))
                 break
 
             if job.status == "error":
-                yield {
-                    "event": "error",
-                    "data": json.dumps({"detail": job.error or "Pipeline failed"}),
-                }
+                yield _format_event("error", json.dumps({"detail": job.error or "Pipeline failed"}))
                 break
 
             await asyncio.sleep(0.05)
 
-    return EventSourceResponse(generator())
+    return StreamingResponse(generator(), media_type="text/event-stream")
 
 
 @router.post("/draft-followup")

@@ -16,8 +16,8 @@
 fastapi==0.111.0
 uvicorn[standard]==0.29.0
 python-jose[cryptography]==3.3.0
-pydantic==2.7.1
-pydantic-settings==2.2.1
+pydantic==2.13.4
+pydantic-settings==2.14.1
 langgraph==0.2.28
 google-generativeai==0.8.3
 python-dotenv==1.0.1
@@ -25,9 +25,8 @@ sse-starlette==2.1.0
 httpx==0.27.0
 redis==5.0.4
 sqlalchemy==2.0.30
-asyncpg==0.29.0
+asyncpg==0.30.0
 alembic==1.13.1
-chromadb==0.5.0
 ```
 
 **.env.example** — all keys, no secret values:
